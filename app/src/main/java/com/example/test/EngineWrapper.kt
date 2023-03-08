@@ -1,6 +1,7 @@
 package com.example.test
 
 import android.content.res.AssetManager
+import android.util.Log
 import com.mv.engine.FaceBox
 import com.mv.engine.FaceDetector
 import com.mv.engine.Live
@@ -30,8 +31,11 @@ class EngineWrapper(private var assetManager: AssetManager) {
         val begin = System.currentTimeMillis()
 
         val results = mutableListOf<DetectionResult>()
-        val boxes = detectFace(yuv, width, height, orientation)
+        var boxes = detectFace(yuv, width, height, orientation)
+        boxes = boxes.take(1)
+
         boxes.forEach {
+
             val box = it.apply {
                 val c = detectLive(yuv, width, height, orientation, this)
                 confidence = c

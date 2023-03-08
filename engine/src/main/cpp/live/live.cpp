@@ -1,7 +1,7 @@
 //
 // Created by yuanhao on 20-6-12.
 //
-
+#include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include "live.h"
 #include "../android_log.h"
@@ -24,12 +24,17 @@ Live::~Live() {
 int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &configs) {
     configs_ = configs;
     model_num_ = static_cast<int>(configs_.size());
+    LOG_ERR("checkkkkk222.");
+
     for (int i = 0; i < model_num_; ++i) {
         ncnn::Net *net = new ncnn::Net();
+
+
         net->opt = option_;
         std::string param = "live/" + configs_[i].name + ".param";
         std::string model = "live/" + configs_[i].name + ".bin";
         int ret = net->load_param(assetManager, param.c_str());
+
         if (ret != 0) {
             LOG_ERR("LiveBody load param failed.");
             return -2 * (i) - 1;
@@ -58,6 +63,8 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
+        
+        LOG_ERR("checkkkkk___:%f", box);
 
         // inference
         ncnn::Extractor extractor = nets_[i]->create_extractor();
@@ -65,10 +72,16 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         extractor.set_num_threads(thread_num_);
 
         extractor.input(net_input_name_.c_str(), in);
+
         ncnn::Mat out;
-        extractor.extract(net_output_name_.c_str(), out);
+//        LOG_ERR("checkkkkk%f", in);
+
+        extractor.extract(net_output_name_.c_str(), out); //bug
+
 
         confidence += out.row(0)[1];
+
+
     }
     confidence /= model_num_;
 

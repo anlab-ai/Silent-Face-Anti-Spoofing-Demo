@@ -15,5 +15,7 @@
     <color name="green">#00FF00</color>
     <color name="real_face_color">#00FFFF</color>
     <color name="fake_face_color">#F84813</color>
+    <color name="loading_face_color">#FFFF00</color>
+
     <color name="cover_background">#997F7F7F</color>
 </resources>

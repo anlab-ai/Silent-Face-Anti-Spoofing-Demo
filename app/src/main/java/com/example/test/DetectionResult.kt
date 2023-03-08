@@ -22,6 +22,8 @@ class DetectionResult(): BaseObservable() {
 
     var hasFace: Boolean = false
 
+    var conf_: Float = 0.toFloat()
+
     constructor(faceBox: FaceBox, time: Long, hasFace: Boolean) : this() {
         this.left = faceBox.left
         this.top = faceBox.top
@@ -30,6 +32,8 @@ class DetectionResult(): BaseObservable() {
         this.confidence = faceBox.confidence
         this.time = time
         this.hasFace = hasFace
+        this.conf_ = faceBox.confidence
+
     }
 
     fun updateLocation(rect: Rect): DetectionResult {
