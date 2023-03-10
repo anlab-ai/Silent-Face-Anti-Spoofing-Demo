@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var threshold: Float = defaultThreshold
 
     private var camera: Camera? = null
-    private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_BACK
+    private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_front: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_back: Int = Camera.CameraInfo.CAMERA_FACING_BACK
     private val previewWidth: Int = 640
