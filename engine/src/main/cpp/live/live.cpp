@@ -13,7 +13,7 @@ using namespace cv;
 using namespace cv::dnn;
 
 Live::Live() {
-    thread_num_ = 4;
+    thread_num_ = 8;
 
     option_.lightmode = true;
     option_.num_threads = thread_num_;

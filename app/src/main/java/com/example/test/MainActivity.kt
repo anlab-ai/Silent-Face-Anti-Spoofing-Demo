@@ -111,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         binding.result = DetectionResult()
         binding.result2 = DetectionResult()
 
-
         calculateSize()
 
         binding.surface.holder.let {
