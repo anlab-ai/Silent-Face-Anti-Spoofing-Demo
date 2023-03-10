@@ -1,13 +1,19 @@
 //
 // Created by yuanhao on 20-6-12.
 //
+#include <opencv2/opencv.hpp>
+#include <opencv2/dnn/dnn.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include "live.h"
 #include "../android_log.h"
+#include <iostream>
+using namespace std;
+using namespace cv;
+using namespace cv::dnn;
 
 Live::Live() {
-    thread_num_ = 2;
+    thread_num_ = 4;
 
     option_.lightmode = true;
     option_.num_threads = thread_num_;
@@ -24,11 +30,10 @@ Live::~Live() {
 int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &configs) {
     configs_ = configs;
     model_num_ = static_cast<int>(configs_.size());
-    LOG_ERR("checkkkkk222.");
+//    LOG_ERR("checkkkkk222.");
 
     for (int i = 0; i < model_num_; ++i) {
         ncnn::Net *net = new ncnn::Net();
-
 
         net->opt = option_;
         std::string param = "live/" + configs_[i].name + ".param";
@@ -55,16 +60,23 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
     for (int i = 0; i < model_num_; i++) {
         cv::Mat roi;
         if(configs_[i].org_resize) {
+
             cv::resize(src, roi, cv::Size(configs_[i].width, configs_[i].height));
         } else {
+
             cv::Rect rect = CalculateBox(box, src.cols, src.rows, configs_[i]);
             // roi resize
             cv::resize(src(rect), roi, cv::Size(configs_[i].width, configs_[i].height));
+
+        }
+        LOG_ERR("checkkkkk_Input shape: %d x %d x %d x %d\n", roi.size[0], roi.size[1], roi.channels() , roi.rows);
+
+        if (i == 2) {
+            cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
         }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
-        
-        LOG_ERR("checkkkkk___:%f", box);
+
 
         // inference
         ncnn::Extractor extractor = nets_[i]->create_extractor();
@@ -77,13 +89,20 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
 //        LOG_ERR("checkkkkk%f", in);
 
         extractor.extract(net_output_name_.c_str(), out); //bug
+        LOG_ERR("checkkkkk%d", out.dims);
 
+        if (i == 2) {
+            confidence += out.row(0)[0];
+//            confidence += out.row(0)[0];
 
-        confidence += out.row(0)[1];
+        }
+        else {
+            confidence += out.row(0)[1];
 
+        }
 
     }
-    confidence /= model_num_;
+    confidence /= model_num_ ;
 
     box.confidence = confidence;
     return confidence;

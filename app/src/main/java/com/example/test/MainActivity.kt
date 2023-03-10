@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     var confValues = mutableListOf<Float>()
 //    var confValues: MutableList<Double> = mutableListOf()
-    var isFirst = true
+//    var isFirst = true
 
     private var startTime = 0L
     /**
@@ -249,6 +249,13 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
+                                    if (result.confidence > 0.5F && result.confidence < threshold) {
+                                        result.confidence = 0.5F
+                                    }
+                                    if (result.confidence > 0.98F) {
+                                        result.confidence = 1.0F
+                                    }
+
                                     confValues.add(result.confidence)
                                     confValues = confValues.takeLast(frame_loading).toMutableList() //frame_loading: number of frame check
                                     val sumConf = confValues.sum()
@@ -334,7 +341,6 @@ class MainActivity : AppCompatActivity() {
             result = (360 - result) % 360 // compensate the mirror
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360
-//            result = (360 - result) % 360 // compensate the mirror
         }
 
         camera!!.setDisplayOrientation(result)
@@ -388,7 +394,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.915F ///915 default
+        const val defaultThreshold = 0.655F ///915 default
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
