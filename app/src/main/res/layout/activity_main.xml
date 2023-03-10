@@ -104,28 +104,39 @@
             app:y1="@{result2.top}"
             app:y2="@{result2.bottom}" />
 
-
-        <LinearLayout
-            android:layout_width="142dp"
-            android:layout_height="43dp"
-            android:layout_centerHorizontal="true"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="72dp"
-            android:visibility="@{result.hasFace ? View.VISIBLE : View.GONE}"
-            android:background="@{result.confidence == 0 ?@drawable/result_loading_face_shape: result.confidence >= result.threshold ? @drawable/result_real_face_shape : @drawable/result_fake_face_shape}"
-            android:gravity="center">
+            android:layout_marginBottom="72dp">
+            <LinearLayout
+                android:layout_width="142dp"
+                android:layout_height="43dp"
+                android:layout_centerHorizontal="true"
+                android:visibility="@{result.hasFace ? View.VISIBLE : View.GONE}"
+                android:background="@{result.confidence == 0 ?@drawable/result_loading_face_shape: result.confidence >= result.threshold ? @drawable/result_real_face_shape : @drawable/result_fake_face_shape}"
+                android:gravity="center">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:drawableStart="@{result.confidence == 0 ? @drawable/clock :result.confidence >= result.threshold ? @drawable/success_icon : @drawable/fail_icon}"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:drawableStart="@{result.confidence == 0 ? @drawable/clock :result.confidence >= result.threshold ? @drawable/success_icon : @drawable/fail_icon}"
 
-                android:drawablePadding="20dp"
-                android:text='@{result.confidence == 0 ? @string/loading: result.confidence >= result.threshold ? @string/real_face : @string/fake_face}'
-                android:textColor="@{result.confidence == 0 ?@color/loading_face_color: result.confidence >= result.threshold ? @color/real_face_color : @color/fake_face_color}"/>
+                    android:drawablePadding="20dp"
+                    android:text='@{result.confidence == 0 ? @string/loading: result.confidence >= result.threshold ? @string/real_face : @string/fake_face}'
+                    android:textColor="@{result.confidence == 0 ?@color/loading_face_color: result.confidence >= result.threshold ? @color/real_face_color : @color/fake_face_color}"/>
 
-        </LinearLayout>
+            </LinearLayout>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="21dp"
+                android:id="@+id/btn_flip"
+                android:src="@drawable/ic_flip_camera"/>
+
+        </RelativeLayout>
 
 
 

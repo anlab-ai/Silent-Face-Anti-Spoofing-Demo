@@ -44,8 +44,9 @@ class MainActivity : AppCompatActivity() {
     private var threshold: Float = defaultThreshold
 
     private var camera: Camera? = null
-//    private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_BACK
+    private var cameraId_front: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
+    private var cameraId_back: Int = Camera.CameraInfo.CAMERA_FACING_BACK
     private val previewWidth: Int = 640
     private val previewHeight: Int = 480
     private var frameCount = 0
@@ -69,8 +70,8 @@ class MainActivity : AppCompatActivity() {
      * 88          88      88  88
      * 88          88  888888  888888
      */
-//    private val frameOrientation: Int = 7 //Front camera
-    private val frameOrientation: Int = 1 //Back camera
+    private val frameOrientation_front: Int = 7 //Front camera
+    private val frameOrientation_back: Int = 1 //Back camera
 
     private var screenWidth: Int = 0
     private var screenHeight: Int = 0
@@ -110,7 +111,14 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.result = DetectionResult()
         binding.result2 = DetectionResult()
-
+        binding.btnFlip.setOnClickListener({
+            if(cameraId==cameraId_back){
+                cameraId = cameraId_front
+            }else{
+                cameraId = cameraId_back
+            }
+            init()
+        })
         calculateSize()
 
         binding.surface.holder.let {
@@ -134,7 +142,9 @@ class MainActivity : AppCompatActivity() {
 
                     val parameters = camera?.parameters
                     parameters?.setPreviewSize(previewWidth, previewHeight)
-                    parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
+                    if (cameraId == cameraId_back){
+                        parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
+                    }
                     //parameters?.flashMode()
 
                     factorX = screenWidth / previewHeight.toFloat()
@@ -185,7 +195,10 @@ class MainActivity : AppCompatActivity() {
 
                             GlobalScope.launch(detectionContext) {
                                 working = true
-
+                                var frameOrientation = frameOrientation_front
+                                if (cameraId == cameraId_back){
+                                    frameOrientation = frameOrientation_back
+                                }
                                 // results = list cac box
                                 val results = engineWrapper.detect(
                                     data,
