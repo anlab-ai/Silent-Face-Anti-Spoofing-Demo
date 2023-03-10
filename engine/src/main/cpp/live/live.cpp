@@ -89,14 +89,25 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
 //        LOG_ERR("checkkkkk%f", in);
 
         extractor.extract(net_output_name_.c_str(), out); //bug
-        LOG_ERR("checkkkkk%d", out.dims);
 
         if (i == 2) {
-            confidence += out.row(0)[0];
+            if (confidence > 1.999){
+                confidence += 0.8f;
+
+            }
+            else{
+                confidence += out.row(0)[0];
+                LOG_ERR("checkkkkk___%f", out.row(0)[0]);
+                LOG_ERR("checkkkkk___2222%f", out.row(0)[1]);
+            }
+
+
+
 //            confidence += out.row(0)[0];
 
         }
         else {
+
             confidence += out.row(0)[1];
 
         }
