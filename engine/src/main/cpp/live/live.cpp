@@ -8,6 +8,7 @@
 #include "live.h"
 #include "../android_log.h"
 #include <iostream>
+
 using namespace std;
 using namespace cv;
 using namespace cv::dnn;
@@ -73,10 +74,16 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
 
         if (i == 2) {
             cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
+            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols, roi.rows);
+
+        }else{
+            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
+
         }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
 
+        LOG_ERR("checkkkkk___model3=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
 
         // inference
         ncnn::Extractor extractor = nets_[i]->create_extractor();
@@ -91,29 +98,28 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         extractor.extract(net_output_name_.c_str(), out); //bug
 
         if (i == 2) {
-            if (confidence > 1.999){
-                confidence += 0.8f;
+            LOG_ERR("checkkkkk___model3=%f", out.row(0)[0]);
 
+            if (confidence > 1.98){
+                confidence += 1.8f;
+            ////1.999
             }
             else{
                 confidence += out.row(0)[0];
-                LOG_ERR("checkkkkk___%f", out.row(0)[0]);
-                LOG_ERR("checkkkkk___2222%f", out.row(0)[1]);
+                confidence += out.row(0)[0];
+
             }
-
-
-
-//            confidence += out.row(0)[0];
 
         }
         else {
+            LOG_ERR("checkkkkk___model12%f", out.row(0)[1]);
 
             confidence += out.row(0)[1];
 
         }
 
     }
-    confidence /= model_num_ ;
+    confidence /= ( model_num_ + 1) ;
 
     box.confidence = confidence;
     return confidence;

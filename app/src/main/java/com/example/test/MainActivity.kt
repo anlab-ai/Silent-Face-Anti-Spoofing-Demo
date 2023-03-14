@@ -261,10 +261,10 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
-                                    if (result.confidence > 0.5F && result.confidence < threshold) {
-                                        result.confidence = 0.5F
-                                    }
-                                    if (result.confidence > 0.98F) {
+//                                    if (result.confidence > 0.4F && result.confidence < threshold) {
+//                                        result.confidence = 0.4F
+//                                    }
+                                    if (result.confidence > 0.97F) {
                                         result.confidence = 1.0F
                                     }
 
@@ -406,7 +406,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.655F ///915 default
+        const val defaultThreshold = 0.5F ///915 default 655
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1

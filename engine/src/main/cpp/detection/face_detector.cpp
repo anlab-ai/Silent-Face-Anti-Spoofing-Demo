@@ -10,7 +10,7 @@ static bool AreaComp(FaceBox& l, FaceBox& r) {
     return ((l.x2 - l.x1 + 1) * (l.y2 - l.y1 + 1)) > ((r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1));
 }
 
-FaceDetector::FaceDetector() : threshold_(0.6f), thread_num_(2){
+FaceDetector::FaceDetector() : threshold_(0.7f), thread_num_(2){
     min_face_size_ = 64;
 
     option_.lightmode = true;
@@ -69,6 +69,9 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         float confidence = values[1];
 
         if(confidence < threshold_) continue;
+        LOG_ERR("checkkkkk___confidence%f", confidence);
+        LOG_ERR("checkkkkk___confidence%f", threshold_);
+
 
         FaceBox box;
         box.confidence = confidence;
