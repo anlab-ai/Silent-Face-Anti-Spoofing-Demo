@@ -7,12 +7,12 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.content.pm.PackageManager
-import android.graphics.ImageFormat
-import android.graphics.Rect
+import android.graphics.*
 import android.hardware.Camera
 import android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
@@ -29,10 +29,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import java.io.IOException
-import android.graphics.PointF
+import java.io.*
 
-import kotlin.math.sqrt
 
 @ObsoleteCoroutinesApi
 class MainActivity : AppCompatActivity() {
@@ -47,10 +45,10 @@ class MainActivity : AppCompatActivity() {
     private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_front: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_back: Int = Camera.CameraInfo.CAMERA_FACING_BACK
-    private val previewWidth: Int = 640
-    private val previewHeight: Int = 480
+    private val previewWidth: Int = 1280
+    private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 10
+    private var frame_loading = 7
 
     private var count_check = 0
     var prevCenterPos: PointF? = null
@@ -86,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        getPermission();
         if (hasPermissions()) {
             init()
         } else {
@@ -121,6 +119,18 @@ class MainActivity : AppCompatActivity() {
         })
         calculateSize()
 
+//        // test
+//        val m: Mat = Utils.loadResource(
+//            this@MainActivity,
+//            android.R.drawable.demo,
+//            Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE
+//        )
+//        val bm = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888)
+//        Utils.matToBitmap(m, bm)
+//        val iv = findViewById<View>(android.R.drawable.demo) as ImageView
+//        iv.setImageBitmap(bm)
+        ///////////////////////
+
         binding.surface.holder.let {
             it.setFormat(ImageFormat.NV21)
             it.addCallback(object : SurfaceHolder.Callback, Camera.PreviewCallback {
@@ -142,6 +152,7 @@ class MainActivity : AppCompatActivity() {
 
                     val parameters = camera?.parameters
                     parameters?.setPreviewSize(previewWidth, previewHeight)
+
                     if (cameraId == cameraId_back){
                         parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
                     }
@@ -149,8 +160,8 @@ class MainActivity : AppCompatActivity() {
 
                     factorX = screenWidth / previewHeight.toFloat()
                     factorY = screenHeight / previewWidth.toFloat()
-//                    Log.d("ngoc", "/screenHeight: "+screenHeight+"/screenWidth: "+screenWidth)
-//                    Log.d("ngoc", "/previewHeight: "+previewHeight+"/previewWidth: "+previewWidth)
+                    Log.d("ngocscreenHeight", "/screenHeight: "+ screenHeight + "/screenWidth: "+screenWidth)
+                    Log.d("ngocscreenHeight_preview", "/previewHeight: "+previewWidth+"/previewWidth: "+previewHeight)
 
                     camera?.parameters = parameters
 
@@ -182,9 +193,36 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+
                 override fun onPreviewFrame(data: ByteArray?, camera: Camera?) {
 
+
                     if (enginePrepared && data != null) {
+                        Log.d("save_img", "start")
+
+//                        /////save image
+//                        try {
+//                            val parameters = camera!!.parameters
+//                            val size: Camera.Size = parameters.previewSize
+//                            val image = YuvImage(
+//                                data, parameters.previewFormat,
+//                                640, 480, null
+//                            )
+//                            Log.d("save_img", "start" + size.width)
+//
+//                            val file = File(
+//                                Environment.getExternalStorageDirectory()
+//                                    .path + "/Download/out.jpg"
+//                            )
+//                            val filecon = FileOutputStream(file)
+//                            image.compressToJpeg(
+//                                Rect(0, 0, image.width, image.height), 90,
+//                                filecon
+//                            )
+//                        } catch (e: FileNotFoundException) {
+//
+//                        }
+                        ////////////////////////
 
                         if (!working) {
 //                            // end time
@@ -199,6 +237,7 @@ class MainActivity : AppCompatActivity() {
                                 if (cameraId == cameraId_back){
                                     frameOrientation = frameOrientation_back
                                 }
+
                                 // results = list cac box
                                 val results = engineWrapper.detect(
                                     data,
@@ -206,6 +245,8 @@ class MainActivity : AppCompatActivity() {
                                     previewHeight,
                                     frameOrientation
                                 )
+                                Log.d("son", "set demo image endrrrrr")
+
                                 Log.d("ngoc_results", "box =${results}")
 
                                 ///check results=[]
@@ -293,15 +334,15 @@ class MainActivity : AppCompatActivity() {
                                             result.right,
                                             result.bottom
                                         )
-
                                         binding.result = result.updateLocation(rect)
 
                                     }
+//                                    Log.d("son_checkkkkk___model3=", "check count frame=left${result.left}, left${result.top}, left${result.right}, left${result.right}, left${result.bottom}")
+
                                     binding.rectView.postInvalidate()
 
                                 }
                                 working = false
-
 
                             }
                         }
@@ -371,6 +412,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "PERMISSION_Camera", Toast.LENGTH_LONG).show()
             }
         }
+        if ((ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
+            (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            Log.d("ngoc", "permission STORAGE grand")
+        }else{
+            Log.d("ngoc", "permission STORAGE deny")
+        }
     }
 
     private fun hasCameraPermission(): Boolean {
@@ -411,5 +459,47 @@ class MainActivity : AppCompatActivity() {
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
     }
+
+    private fun getPermission() {
+        if ((ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) || (
+                    ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
+    }
+
+    fun saveImage(finalBitmap: Bitmap) {
+        Log.d("ngoc", "saveImage")
+        val root = Environment.getExternalStorageDirectory().toString()
+        val myDir = File("$root/Download")
+        myDir.mkdirs()
+        val fname = "imagee" + ".png"
+        val file = File(myDir, fname)
+        if (file.exists()) file.delete()
+        try {
+            val out = FileOutputStream(file)
+            finalBitmap.compress(Bitmap.CompressFormat.PNG, 50, out)
+            out.flush()
+            out.close()
+        } catch (e: java.lang.Exception) {
+            Log.d("ngoc", e.message!!)
+            e.printStackTrace()
+        }
+    }
+    fun saveImage(array: ByteArray?) {
+        Log.d("ngoc", "saveImage")
+        val root = Environment.getExternalStorageDirectory().toString()
+        val myDir = File("$root/Download")
+        myDir.mkdirs()
+        val fname = "imagee" + ".png"
+        try {
+            val path = "$root/Download/$fname"
+            val stream = FileOutputStream(path)
+            stream.write(array)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        }
+    }
+
 
 }

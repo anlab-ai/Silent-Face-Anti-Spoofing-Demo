@@ -8,6 +8,7 @@
 #include "live.h"
 #include "../android_log.h"
 #include <iostream>
+//#include <onnxruntime_cxx_api.h>
 
 using namespace std;
 using namespace cv;
@@ -41,6 +42,7 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
         std::string model = "live/" + configs_[i].name + ".bin";
         int ret = net->load_param(assetManager, param.c_str());
 
+
         if (ret != 0) {
             LOG_ERR("LiveBody load param failed.");
             return -2 * (i) - 1;
@@ -52,10 +54,11 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
             return -2 * (i + 1);
         }
         nets_.emplace_back(net);
+
+
     }
     return 0;
 }
-
 float Live::Detect(cv::Mat &src, FaceBox &box) {
     float confidence = 0.f;
     for (int i = 0; i < model_num_; i++) {
@@ -70,10 +73,13 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
             cv::resize(src(rect), roi, cv::Size(configs_[i].width, configs_[i].height));
 
         }
-        LOG_ERR("checkkkkk_Input shape: %d x %d x %d x %d\n", roi.size[0], roi.size[1], roi.channels() , roi.rows);
 
         if (i == 2) {
+            LOG_ERR("checkkkkk___model3_BGR=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.size[3]);
+
             cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
+            LOG_ERR("checkkkkk___model3_RGB=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
+
             ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols, roi.rows);
 
         }else{
@@ -98,7 +104,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         extractor.extract(net_output_name_.c_str(), out); //bug
 
         if (i == 2) {
-            LOG_ERR("checkkkkk___model3=%f", out.row(0)[0]);
+            LOG_ERR("son_checkkkkk___model3=%f", out.row(0)[0]);
 
             if (confidence > 1.98){
                 confidence += 1.8f;
@@ -109,15 +115,15 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
                 confidence += out.row(0)[0];
 
             }
-
         }
         else {
-            LOG_ERR("checkkkkk___model12%f", out.row(0)[1]);
+            if (i == 0){
+                LOG_ERR("checkkkkk___model12%f", out.row(0)[1]);
 
+            }
             confidence += out.row(0)[1];
 
         }
-
     }
     confidence /= ( model_num_ + 1) ;
 

@@ -7,7 +7,10 @@
 #include "live/live.h"
 #include "android_log.h"
 #include "img_process.h"
-
+#include <opencv2/opencv.hpp>
+#include <opencv2/dnn/dnn.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 JniLongField live_field("nativeHandler");
 
 Live* get_live(JNIEnv* env, jobject instance) {
@@ -115,6 +118,7 @@ LIVE_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv, jint
 
     cv::Mat bgr;
     Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
+
 
     FaceBox faceBox;
     faceBox.x1 = left;

@@ -6,6 +6,7 @@
 #include "definition.h"
 #include "detection/face_detector.h"
 #include "img_process.h"
+#include "android_log.h"
 #include <android/asset_manager_jni.h>
 
 
@@ -122,6 +123,9 @@ FACE_DETECTOR_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray 
 
     cv::Mat bgr;
     Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
+
+    LOG_ERR("checkkkkk_Input dst: %d x %d x %d \n", preview_width, preview_height, orientation);
+
 
     std::vector<FaceBox> boxes;
     get_face_detector(env, instance)->Detect(bgr, boxes);

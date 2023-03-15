@@ -2,6 +2,7 @@ package com.mv.engine
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.annotation.Keep
 import java.lang.IllegalArgumentException
 
@@ -30,9 +31,14 @@ class FaceDetector : Component() {
         previewHeight: Int,
         orientation: Int
     ): List<FaceBox> {
-        if (previewWidth * previewHeight * 3 / 2 != yuv.size) {
-            throw IllegalArgumentException("Invalid yuv data")
-        }
+//        if (previewWidth * previewHeight * 3 / 2 != yuv.size) {
+//            Log.d("son_check_size", "set demo imageaaaa")
+//
+//            throw IllegalArgumentException("Invalid yuv data")
+//            Log.d("son_check_size", "set demo image")
+//
+//        }
+
         return nativeDetectYuv(yuv, previewWidth, previewHeight, orientation)
     }
 

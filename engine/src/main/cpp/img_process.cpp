@@ -46,12 +46,16 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
     dst.create(height, width, CV_8UC3);
 
     cv::cvtColor(yuv, dst, cv::COLOR_YUV2BGR_NV21);
+    LOG_ERR("checkkkkk_Input dst=====: %d x %d x %d x %d\n", dst.size[0], dst.size[1], dst.channels() , dst.size[2]);
 
     switch (orientation) {
+
         case 1: // 不需要处理
             cv::flip(dst, dst, 0);
+//            LOG_ERR("checkkkkk_Input dst=====: %d x %d x %d x %d\n", dst.size[0], dst.size[1], dst.channels() , dst.size[2]);
 
             cv::transpose(dst, dst);
+            LOG_ERR("checkkkkk_Input img: %d x %d x %d x %d\n", dst.size[0], dst.size[1], dst.channels() , dst.size[2]);
 
             break;
         case 2: // 水平翻转

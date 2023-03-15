@@ -29,9 +29,12 @@ class EngineWrapper(private var assetManager: AssetManager) {
 
     fun detect(yuv: ByteArray, width: Int, height: Int, orientation: Int): List<DetectionResult> {
         val begin = System.currentTimeMillis()
+//        Log.d("soncheck_input", "check width img=$width, height img=${height}")
 
         val results = mutableListOf<DetectionResult>()
         var boxes = detectFace(yuv, width, height, orientation)
+        Log.d("soncheck_input", "check width img=${boxes.size}")
+
         boxes = boxes.take(1)
 
         boxes.forEach {
@@ -39,6 +42,8 @@ class EngineWrapper(private var assetManager: AssetManager) {
             val box = it.apply {
                 val c = detectLive(yuv, width, height, orientation, this)
                 confidence = c
+
+
             }
             val end = System.currentTimeMillis()
             val result = DetectionResult(box, end - begin, true)
@@ -49,6 +54,7 @@ class EngineWrapper(private var assetManager: AssetManager) {
     }
 
     private fun detectFace(
+
         yuv: ByteArray,
         width: Int,
         height: Int,
