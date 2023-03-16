@@ -153,9 +153,9 @@ class MainActivity : AppCompatActivity() {
                     val parameters = camera?.parameters
                     parameters?.setPreviewSize(previewWidth, previewHeight)
 
-//                    if (cameraId == cameraId_back){
+                    if (cameraId == cameraId_back){
                     parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
-//                    }
+                    }
                     //parameters?.flashMode()
 
                     factorX = screenWidth / previewHeight.toFloat()
