@@ -75,21 +75,25 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         }
 
         if (i == 2) {
-            LOG_ERR("checkkkkk___model3_BGR=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.size[3]);
+//            LOG_ERR("checkkkkk___model3_BGR=%d, %d, %d, %d", (roi.at<cv::Vec3b>(0, 0).val[0]),
+//                    (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]),
+//                    roi.size[3]);
 
             cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
-            LOG_ERR("checkkkkk___model3_RGB=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
-
-            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols, roi.rows);
-
-        }else{
-            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
-
+//            LOG_ERR("checkkkkk___model3_RGB=%d, %d, %d, %d", (roi.at<cv::Vec3b>(0, 0).val[0]),
+//                    (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
+//
+//            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols,
+//                                                  roi.rows);
         }
+//        }else{
+//            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
+//
+//        }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
 
-        LOG_ERR("checkkkkk___model3=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
+//        LOG_ERR("checkkkkk___model3=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
 
         // inference
         ncnn::Extractor extractor = nets_[i]->create_extractor();
@@ -117,10 +121,14 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
             }
         }
         else {
-            if (i == 0){
-                LOG_ERR("checkkkkk___model12%f", out.row(0)[1]);
-
-            }
+//            if (i == 0){
+//                LOG_ERR("checkkkkk___model12====111%f", out.row(0)[1]);
+//
+//            }
+//            if (i == 1){
+////                LOG_ERR("checkkkkk___model12======222%f", out.row(0)[1]);
+//
+//            }
             confidence += out.row(0)[1];
 
         }

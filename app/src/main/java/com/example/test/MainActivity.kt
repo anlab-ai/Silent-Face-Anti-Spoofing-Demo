@@ -153,15 +153,15 @@ class MainActivity : AppCompatActivity() {
                     val parameters = camera?.parameters
                     parameters?.setPreviewSize(previewWidth, previewHeight)
 
-                    if (cameraId == cameraId_back){
-                        parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
-                    }
+//                    if (cameraId == cameraId_back){
+                    parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
+//                    }
                     //parameters?.flashMode()
 
                     factorX = screenWidth / previewHeight.toFloat()
                     factorY = screenHeight / previewWidth.toFloat()
-                    Log.d("ngocscreenHeight", "/screenHeight: "+ screenHeight + "/screenWidth: "+screenWidth)
-                    Log.d("ngocscreenHeight_preview", "/previewHeight: "+previewWidth+"/previewWidth: "+previewHeight)
+//                    Log.d("ngocscreenHeight", "/screenHeight: "+ screenHeight + "/screenWidth: "+screenWidth)
+//                    Log.d("ngocscreenHeight_preview", "/previewHeight: "+previewWidth+"/previewWidth: "+previewHeight)
 
                     camera?.parameters = parameters
 
@@ -200,13 +200,13 @@ class MainActivity : AppCompatActivity() {
                     if (enginePrepared && data != null) {
                         Log.d("save_img", "start")
 
-//                        /////save image
+//                        ///save image
 //                        try {
 //                            val parameters = camera!!.parameters
 //                            val size: Camera.Size = parameters.previewSize
 //                            val image = YuvImage(
 //                                data, parameters.previewFormat,
-//                                640, 480, null
+//                                previewWidth, previewHeight, null
 //                            )
 //                            Log.d("save_img", "start" + size.width)
 //
@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity() {
 //                        } catch (e: FileNotFoundException) {
 //
 //                        }
-                        ////////////////////////
+//                        ////////////////////
 
                         if (!working) {
 //                            // end time
@@ -302,17 +302,20 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
-//                                    if (result.confidence > 0.4F && result.confidence < threshold) {
-//                                        result.confidence = 0.4F
-//                                    }
-                                    if (result.confidence > 0.97F) {
+                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.8F) {
+                                        result.confidence = 0.2F
+                                    }
+                                    if (result.confidence >= threshold * 0.8F && result.confidence < threshold ) {
+                                        result.confidence = threshold * 0.8F
+                                    }
+                                    if (result.confidence > 0.96F) {
                                         result.confidence = 1.0F
                                     }
 
                                     confValues.add(result.confidence)
                                     confValues = confValues.takeLast(frame_loading).toMutableList() //frame_loading: number of frame check
                                     val sumConf = confValues.sum()
-                                    Log.d("ngoc", "check count frame" + frameCount)
+//                                    Log.d("ngoc", "check count frame" + frameCount)
 
                                     if (frameCount > frame_loading) {
                                         result.confidence = sumConf / frame_loading
@@ -454,7 +457,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.5F ///915 default 655
+        const val defaultThreshold = 0.51F ///915 default 655
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
