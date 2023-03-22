@@ -80,21 +80,21 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         box.x2 = values[4] * w;
         box.y2 = values[5] * h;
 
-        // square
-        float box_width = box.x2 - box.x1 + 1;
-        float box_height = box.y2 - box.y1 + 1;
-
-        float size = (box_width + box_height) * 0.5f;
-
-        if(size < min_face_size_) continue;
-
-        float cx = box.x1 + box_width * 0.5f;
-        float cy = box.y1 + box_height * 0.5f;
-
-        box.x1 = cx - size * 0.5f;
-        box.y1 = cy - size * 0.5f;
-        box.x2 = cx + size * 0.5f - 1;
-        box.y2 = cy + size * 0.5f - 1;
+//        // square
+//        float box_width = box.x2 - box.x1 + 1;
+//        float box_height = box.y2 - box.y1 + 1;
+//
+//        float size = (box_width + box_height) * 0.5f;
+//
+//        if(size < min_face_size_) continue;
+//
+//        float cx = box.x1 + box_width * 0.5f;
+//        float cy = box.y1 + box_height * 0.5f;
+//
+//        box.x1 = cx - size * 0.5f;
+//        box.y1 = cy - size * 0.5f;
+//        box.x2 = cx + size * 0.5f - 1;
+//        box.y2 = cy + size * 0.5f - 1;
 
         boxes.emplace_back(box);
     }

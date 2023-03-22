@@ -61,39 +61,35 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
 }
 float Live::Detect(cv::Mat &src, FaceBox &box) {
     float confidence = 0.f;
+    LOG_ERR("son_checkkkkk___model3_size_input=%d, %d", src.cols, src.rows);
+    Mat scr_clone = src.clone();
+    cv::Mat kernel = (cv::Mat_<float>(3, 3) << -1, -1, -1, -1, 9, -1, -1, -1, -1);
+//
+//    cv::filter2D(src, scr_clone, -1, kernel);
+
     for (int i = 0; i < model_num_; i++) {
         cv::Mat roi;
+
         if(configs_[i].org_resize) {
 
-            cv::resize(src, roi, cv::Size(configs_[i].width, configs_[i].height));
+            cv::resize(scr_clone, roi, cv::Size(configs_[i].width, configs_[i].height));
         } else {
 
             cv::Rect rect = CalculateBox(box, src.cols, src.rows, configs_[i]);
             // roi resize
-            cv::resize(src(rect), roi, cv::Size(configs_[i].width, configs_[i].height));
+//            LOG_ERR("son_checkkkkk___model3_face size============: %d x %d x %d x %d\n", src(rect).size[0], src(rect).size[1], src(rect).channels() , src(rect).size[2]);
+
+            cv::resize(scr_clone(rect), roi, cv::Size(configs_[i].width, configs_[i].height));
 
         }
-
         if (i == 2) {
-//            LOG_ERR("checkkkkk___model3_BGR=%d, %d, %d, %d", (roi.at<cv::Vec3b>(0, 0).val[0]),
-//                    (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]),
-//                    roi.size[3]);
 
             cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
-//            LOG_ERR("checkkkkk___model3_RGB=%d, %d, %d, %d", (roi.at<cv::Vec3b>(0, 0).val[0]),
-//                    (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
-//
-//            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols,
-//                                                  roi.rows);
+
         }
-//        }else{
-//            ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
-//
-//        }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
 
-//        LOG_ERR("checkkkkk___model3=%d, %d, %d, %d",(roi.at<cv::Vec3b>(0, 0).val[0]) , (roi.at<cv::Vec3b>(0, 0).val[1]), (roi.at<cv::Vec3b>(0, 0).val[2]), roi.cols);
 
         // inference
         ncnn::Extractor extractor = nets_[i]->create_extractor();
@@ -103,47 +99,38 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
         extractor.input(net_input_name_.c_str(), in);
 
         ncnn::Mat out;
-//        LOG_ERR("checkkkkk%f", in);
 
         extractor.extract(net_output_name_.c_str(), out); //bug
 
-        if (i == 2) {
+
+        if (confidence > 1.99){
+            confidence += 1.8f;
+            ////1.999
+        }
+
+        if (i < 2){
+            confidence += out.row(0)[1];
+            LOG_ERR("son_checkkkkk___model3===22222===222%f", out.row(0)[1]);
+
+        }else{
+            confidence += out.row(0)[0] * 1;
             LOG_ERR("son_checkkkkk___model3=%f", out.row(0)[0]);
 
-            if (confidence > 1.98){
-                confidence += 1.8f;
-            ////1.999
-            }
-            else{
-                confidence += out.row(0)[0];
-                confidence += out.row(0)[0];
-
-            }
         }
-        else {
-//            if (i == 0){
-//                LOG_ERR("checkkkkk___model12====111%f", out.row(0)[1]);
-//
-//            }
-//            if (i == 1){
-////                LOG_ERR("checkkkkk___model12======222%f", out.row(0)[1]);
-//
-//            }
-            confidence += out.row(0)[1];
 
-        }
     }
-    confidence /= ( model_num_ + 1) ;
+    confidence /= ( model_num_ ) ;
+    LOG_ERR("son_checkkkkk___model3____out=%f", confidence);
 
     box.confidence = confidence;
     return confidence;
 }
-
 cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config) {
     int x = static_cast<int>(box.x1);
     int y = static_cast<int>(box.y1);
     int box_width = static_cast<int>(box.x2 - box.x1 + 1);
     int box_height = static_cast<int>(box.y2 - box.y1 + 1);
+//    LOG_ERR("son_checkkkkk___model3_face size============: %d x %d x %d x %d\n", x, y, box_width , box_height);
 
     int shift_x = static_cast<int>(box_width * config.shift_x);
     int shift_y = static_cast<int>(box_height * config.shift_y);

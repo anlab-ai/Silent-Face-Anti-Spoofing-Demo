@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 7
+    private var frame_loading = 10
 
     private var count_check = 0
     var prevCenterPos: PointF? = null
@@ -200,29 +200,29 @@ class MainActivity : AppCompatActivity() {
                     if (enginePrepared && data != null) {
                         Log.d("save_img", "start")
 
-//                        ///save image
-//                        try {
-//                            val parameters = camera!!.parameters
-//                            val size: Camera.Size = parameters.previewSize
-//                            val image = YuvImage(
-//                                data, parameters.previewFormat,
-//                                previewWidth, previewHeight, null
-//                            )
-//                            Log.d("save_img", "start" + size.width)
-//
-//                            val file = File(
-//                                Environment.getExternalStorageDirectory()
-//                                    .path + "/Download/out.jpg"
-//                            )
-//                            val filecon = FileOutputStream(file)
-//                            image.compressToJpeg(
-//                                Rect(0, 0, image.width, image.height), 90,
-//                                filecon
-//                            )
-//                        } catch (e: FileNotFoundException) {
-//
-//                        }
-//                        ////////////////////
+                        ///save image
+                        try {
+                            val parameters = camera!!.parameters
+                            val size: Camera.Size = parameters.previewSize
+                            val image = YuvImage(
+                                data, parameters.previewFormat,
+                                previewWidth, previewHeight, null
+                            )
+                            Log.d("save_img", "start" + size.width)
+
+                            val file = File(
+                                Environment.getExternalStorageDirectory()
+                                    .path + "/Download/out.jpg"
+                            )
+                            val filecon = FileOutputStream(file)
+                            image.compressToJpeg(
+                                Rect(0, 0, image.width, image.height), 100,
+                                filecon
+                            )
+                        } catch (e: FileNotFoundException) {
+
+                        }
+                        ////////////////////
 
                         if (!working) {
 //                            // end time
@@ -302,11 +302,11 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
-                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.8F) {
+                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.7F) {
                                         result.confidence = 0.2F
                                     }
-                                    if (result.confidence >= threshold * 0.8F && result.confidence < threshold ) {
-                                        result.confidence = threshold * 0.8F
+                                    if (result.confidence >= threshold * 0.7F && result.confidence < threshold ) {
+                                        result.confidence = threshold * 0.7F
                                     }
                                     if (result.confidence > 0.96F) {
                                         result.confidence = 1.0F
@@ -457,7 +457,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.51F ///915 default 655
+        const val defaultThreshold = 0.65F ///915 default 655 51F
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
