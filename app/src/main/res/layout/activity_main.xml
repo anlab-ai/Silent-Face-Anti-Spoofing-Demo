@@ -141,6 +141,14 @@
                 android:layout_marginEnd="21dp"
                 android:id="@+id/btn_flip"
                 android:src="@drawable/ic_flip_camera"/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="false"
+                android:layout_marginStart="21dp"
+                android:id="@+id/btn_save"
+                android:src="@drawable/ic_save"/>
+
 
         </RelativeLayout>
 

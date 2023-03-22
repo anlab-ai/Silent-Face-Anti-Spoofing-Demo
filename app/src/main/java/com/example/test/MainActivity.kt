@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     private var count_check = 0
     var prevCenterPos: PointF? = null
-
+    var byteArrayData:ByteArray? = null
 
     var confValues = mutableListOf<Float>()
 //    var confValues: MutableList<Double> = mutableListOf()
@@ -117,20 +117,10 @@ class MainActivity : AppCompatActivity() {
             }
             init()
         })
+        binding.btnSave.setOnClickListener({
+            saveImage()
+        })
         calculateSize()
-
-//        // test
-//        val m: Mat = Utils.loadResource(
-//            this@MainActivity,
-//            android.R.drawable.demo,
-//            Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE
-//        )
-//        val bm = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888)
-//        Utils.matToBitmap(m, bm)
-//        val iv = findViewById<View>(android.R.drawable.demo) as ImageView
-//        iv.setImageBitmap(bm)
-        ///////////////////////
-
         binding.surface.holder.let {
             it.setFormat(ImageFormat.NV21)
             it.addCallback(object : SurfaceHolder.Callback, Camera.PreviewCallback {
@@ -198,32 +188,7 @@ class MainActivity : AppCompatActivity() {
 
 
                     if (enginePrepared && data != null) {
-                        Log.d("save_img", "start")
-
-                        ///save image
-                        try {
-                            val parameters = camera!!.parameters
-                            val size: Camera.Size = parameters.previewSize
-                            val image = YuvImage(
-                                data, parameters.previewFormat,
-                                previewWidth, previewHeight, null
-                            )
-                            Log.d("save_img", "start" + size.width)
-
-                            val file = File(
-                                Environment.getExternalStorageDirectory()
-                                    .path + "/Download/out.jpg"
-                            )
-                            val filecon = FileOutputStream(file)
-                            image.compressToJpeg(
-                                Rect(0, 0, image.width, image.height), 100,
-                                filecon
-                            )
-                        } catch (e: FileNotFoundException) {
-
-                        }
-                        ////////////////////
-
+                        byteArrayData = data
                         if (!working) {
 //                            // end time
                             if (frameCount == frame_loading) {
@@ -470,39 +435,34 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
-
-    fun saveImage(finalBitmap: Bitmap) {
-        Log.d("ngoc", "saveImage")
-        val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File("$root/Download")
-        myDir.mkdirs()
-        val fname = "imagee" + ".png"
-        val file = File(myDir, fname)
-        if (file.exists()) file.delete()
-        try {
-            val out = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.PNG, 50, out)
-            out.flush()
-            out.close()
-        } catch (e: java.lang.Exception) {
-            Log.d("ngoc", e.message!!)
-            e.printStackTrace()
+    fun saveImage(){
+        Log.d("save_img", "start")
+        if(byteArrayData != null){
+            try {
+                val parameters = camera!!.parameters
+                val size: Camera.Size = parameters.previewSize
+                val image = YuvImage(
+                    byteArrayData, parameters.previewFormat,
+                    previewWidth, previewHeight, null
+                )
+                Log.d("save_img", "start" + size.width)
+                var name = "out_${System.currentTimeMillis()}.jpg"
+                Log.d("save_img", "name: "+name)
+                val file = File(
+                    Environment.getExternalStorageDirectory()
+                        .path + "/Download/$name"
+                )
+                val filecon = FileOutputStream(file)
+                image.compressToJpeg(
+                    Rect(0, 0, image.width, image.height), 100,
+                    filecon
+                )
+                Toast.makeText(baseContext, "Saved image $name", Toast.LENGTH_SHORT).show()
+            } catch (e: FileNotFoundException) {
+                Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
+            }
+        }else{
+            Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
         }
     }
-    fun saveImage(array: ByteArray?) {
-        Log.d("ngoc", "saveImage")
-        val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File("$root/Download")
-        myDir.mkdirs()
-        val fname = "imagee" + ".png"
-        try {
-            val path = "$root/Download/$fname"
-            val stream = FileOutputStream(path)
-            stream.write(array)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-    }
-
-
 }
