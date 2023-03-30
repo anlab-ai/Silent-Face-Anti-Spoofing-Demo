@@ -55,7 +55,6 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
         }
         nets_.emplace_back(net);
 
-
     }
     return 0;
 }
@@ -102,20 +101,22 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
 
         extractor.extract(net_output_name_.c_str(), out); //bug
 
-
-        if (confidence > 1.99){
-            confidence += 1.8f;
-            ////1.999
-        }
-
+//        if (confidence > 1.99){
+//            confidence += 1.8f;
+//            ////1.999
+//        }
         if (i < 2){
-            confidence += out.row(0)[1];
-            LOG_ERR("son_checkkkkk___model3===22222===222%f", out.row(0)[1]);
+            confidence += out.row(0)[1] ;
+            LOG_ERR("son_checkkkkk___model3===22222===222%f===%f", out.row(0)[1], confidence);
 
         }else{
-            confidence += out.row(0)[0] * 1;
-            LOG_ERR("son_checkkkkk___model3=%f", out.row(0)[0]);
-
+            if (confidence > 1.99){
+                confidence += 0.8f;
+                ////1.999
+            }else{
+                confidence += out.row(0)[1] ;
+            }
+            LOG_ERR("son_checkkkkk___model3=%f====%f", out.row(0)[1], confidence);
         }
 
     }

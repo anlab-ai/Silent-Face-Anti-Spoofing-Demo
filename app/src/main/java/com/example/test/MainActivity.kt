@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 10
+    private var frame_loading = 12
 
     private var count_check = 0
     var prevCenterPos: PointF? = null
@@ -267,11 +267,11 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
-                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.7F) {
+                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.6F) {
                                         result.confidence = 0.2F
                                     }
-                                    if (result.confidence >= threshold * 0.7F && result.confidence < threshold ) {
-                                        result.confidence = threshold * 0.7F
+                                    if (result.confidence >= threshold * 0.6F && result.confidence < threshold ) {
+                                        result.confidence = threshold * 0.6F
                                     }
                                     if (result.confidence > 0.96F) {
                                         result.confidence = 1.0F
@@ -373,18 +373,19 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == permissionReqCode) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                init()
-            } else {
-                Toast.makeText(this, "PERMISSION_Camera", Toast.LENGTH_LONG).show()
-            }
-        }
+//        if (requestCode == permissionReqCode) {
+//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                init()
+//            } else {
+//                Toast.makeText(this, "PERMISSION_Camera", Toast.LENGTH_LONG).show()
+//            }
+//        }
         if ((ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
             (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         ) {
             Log.d("ngoc", "permission STORAGE grand")
         }else{
+            init()
             Log.d("ngoc", "permission STORAGE deny")
         }
     }
@@ -422,7 +423,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.65F ///915 default 655 51F
+        const val defaultThreshold = 0.605F ///915 default 655 51F
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
