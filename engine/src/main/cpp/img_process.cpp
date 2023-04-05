@@ -6,6 +6,7 @@
 #include <opencv2/imgproc.hpp>
 #include "img_process.h"
 #include "android_log.h"
+#include <opencv2/opencv.hpp>
 
 int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out) {
     AndroidBitmapInfo info;
@@ -42,6 +43,7 @@ int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out) {
  *  88          88      88  88
  *  88          88  888888  888888
  */
+
 void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, cv::Mat& dst) {
     cv::Mat yuv(height + height / 2, width, CV_8UC1, data);
     dst.create(height, width, CV_8UC3);
@@ -54,7 +56,6 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
             cv::flip(dst, dst, 0);
 
             cv::transpose(dst, dst);
-//            cv::filter2D(dst, dst, -1, kernel);
             break;
         case 2: // 水平翻转
             cv::flip(dst, dst, 1);
@@ -72,15 +73,19 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
             RotateClockWise90(dst);
             break;
         case 7: // 水平、垂直翻转 --> transpose
+//
+
             cv::flip(dst, dst, -1);
+
             cv::transpose(dst, dst);
-//            cv::filter2D(dst, dst, -1, kernel);
 
             break;
+
         case 8: // 逆时针旋转90°
             RotateAntiClockWise90(dst);
             break;
-        default:break;
+        default:
+            break;
     }
 }
 

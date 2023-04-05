@@ -11,7 +11,7 @@ static bool AreaComp(FaceBox& l, FaceBox& r) {
 }
 
 FaceDetector::FaceDetector() : threshold_(0.9f), thread_num_(2){
-    min_face_size_ = 64;
+    min_face_size_ = 128;
 
     option_.lightmode = true;
     option_.num_threads = thread_num_;
@@ -22,7 +22,7 @@ FaceDetector::~FaceDetector() {
 }
 
 void FaceDetector::SetMinFaceSize(int size) {
-    min_face_size_ = size;
+    min_face_size_ = 128;                   ///min size box face
 }
 
 int FaceDetector::LoadModel(AAssetManager* assetManager) {
@@ -40,7 +40,6 @@ int FaceDetector::LoadModel(AAssetManager* assetManager) {
     }
     return 0;
 }
-
 
 int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
     int w = src.cols;
@@ -80,13 +79,13 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         box.x2 = values[4] * w;
         box.y2 = values[5] * h;
 
-//        // square
-//        float box_width = box.x2 - box.x1 + 1;
-//        float box_height = box.y2 - box.y1 + 1;
+        // square
+        float box_width = box.x2 - box.x1 + 1;
+        float box_height = box.y2 - box.y1 + 1;
+
+        float size = (box_width + box_height) * 0.5f;
 //
-//        float size = (box_width + box_height) * 0.5f;
-//
-//        if(size < min_face_size_) continue;
+        if(size < min_face_size_) continue;
 //
 //        float cx = box.x1 + box_width * 0.5f;
 //        float cy = box.y1 + box_height * 0.5f;

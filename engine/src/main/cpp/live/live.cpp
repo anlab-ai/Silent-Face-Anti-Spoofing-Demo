@@ -8,7 +8,6 @@
 #include "live.h"
 #include "../android_log.h"
 #include <iostream>
-//#include <onnxruntime_cxx_api.h>
 
 using namespace std;
 using namespace cv;
@@ -58,29 +57,92 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
     }
     return 0;
 }
-float Live::Detect(cv::Mat &src, FaceBox &box) {
+float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
     float confidence = 0.f;
-    LOG_ERR("son_checkkkkk___model3_size_input=%d, %d", src.cols, src.rows);
+//    LOG_ERR("son_checkkkkk___model3_size_input=%d, %d, %d", src.cols, src.rows, orientation);
+
+
     Mat scr_clone = src.clone();
-    cv::Mat kernel = (cv::Mat_<float>(3, 3) << -1, -1, -1, -1, 9, -1, -1, -1, -1);
-//
-//    cv::filter2D(src, scr_clone, -1, kernel);
+
 
     for (int i = 0; i < model_num_; i++) {
         cv::Mat roi;
+        cv::Mat roi_pading;
+        cv::Mat roi_pading_final;
+        ////
+        if (orientation == 7){
+            if (box.x2 - box.x1 < 300){
+                cv::Rect rect = CalculateBox(box, src.cols, src.rows, configs_[i], 2.5F);
+                cv::resize(scr_clone(rect), roi_pading, cv::Size(rect.width, rect.height));
 
-        if(configs_[i].org_resize) {
+                //equalize/////////////////////
+                cv::Mat img_ycrcb;
+                //equalize
+                cv::cvtColor(roi_pading, img_ycrcb, cv::COLOR_BGR2YCrCb);
+                // Split the YCrCb channels
+                std::vector<cv::Mat> channels;
+                cv::split(img_ycrcb, channels);
 
-            cv::resize(scr_clone, roi, cv::Size(configs_[i].width, configs_[i].height));
-        } else {
+                // Apply histogram equalization to the Y channel
+                cv::equalizeHist(channels[0], channels[0]);
 
-            cv::Rect rect = CalculateBox(box, src.cols, src.rows, configs_[i]);
-            // roi resize
-//            LOG_ERR("son_checkkkkk___model3_face size============: %d x %d x %d x %d\n", src(rect).size[0], src(rect).size[1], src(rect).channels() , src(rect).size[2]);
+                // Merge the channels back into a YCrCb image
+                cv::merge(channels, img_ycrcb);
 
-            cv::resize(scr_clone(rect), roi, cv::Size(configs_[i].width, configs_[i].height));
+                // Convert the YCrCb image back to BGR color space
+                cv::cvtColor(img_ycrcb, roi_pading_final, cv::COLOR_YCrCb2BGR);
+
+                cv::Rect rect2 = CalculateBox(box, src.cols, src.rows, configs_[i], 0.9F);
+
+                int x = rect2.x - rect.x;
+                int y = rect2.y - rect.y;
+
+                cv::Rect rect3(x, y, rect2.width, rect2.height);
+                LOG_ERR("son_checkkkkk___model3_face size============rect3333: %d x %d x %d x %d\n",  rect3.x , rect3.y, rect3.width, rect3.height);
+                cv::resize(roi_pading_final(rect3), roi, cv::Size(configs_[i].width, configs_[i].height));
+            }
+
+            else{
+
+                Mat dst = src.clone();
+                cv::Mat img_ycrcb;
+
+                //equalize
+                cv::cvtColor(dst, img_ycrcb, cv::COLOR_BGR2YCrCb);
+                // Split the YCrCb channels
+                std::vector<cv::Mat> channels;
+                cv::split(img_ycrcb, channels);
+
+                // Apply histogram equalization to the Y channel
+                cv::equalizeHist(channels[0], channels[0]);
+
+                // Merge the channels back into a YCrCb image
+                cv::merge(channels, img_ycrcb);
+
+                // Convert the YCrCb image back to BGR color space
+                cv::cvtColor(img_ycrcb, dst, cv::COLOR_YCrCb2BGR);
+
+
+
+                cv::Rect rect5 = CalculateBox(box, src.cols, src.rows, configs_[i], 0.9F);
+//            LOG_ERR("son_checkkkkk___model3_face check============rect3333: %d x %d x %d x %d\n",  rect5.x , rect5.y, rect5.width, rect5.height);
+//            LOG_ERR("son_checkkkkk___model3_face check============rect3333: %d x %d \n",  src.rows , src.cols);
+
+                cv::resize(dst(rect5), roi, cv::Size(configs_[i].width, configs_[i].height));
+//            LOG_ERR("son_checkkkkk___model3_face check============rect3333: %d x %d \n",  roi.rows , roi.cols);
+
+            }
+        }
+        else{
+            cv::Rect rect5 = CalculateBox(box, src.cols, src.rows, configs_[i], 0.9F);
+
+
+            cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height));
 
         }
+
+
+
         if (i == 2) {
 
             cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
@@ -101,23 +163,8 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
 
         extractor.extract(net_output_name_.c_str(), out); //bug
 
-//        if (confidence > 1.99){
-//            confidence += 1.8f;
-//            ////1.999
-//        }
-        if (i < 2){
-            confidence += out.row(0)[1] ;
-            LOG_ERR("son_checkkkkk___model3===22222===222%f===%f", out.row(0)[1], confidence);
-
-        }else{
-            if (confidence > 1.99){
-                confidence += 0.8f;
-                ////1.999
-            }else{
-                confidence += out.row(0)[1] ;
-            }
-            LOG_ERR("son_checkkkkk___model3=%f====%f", out.row(0)[1], confidence);
-        }
+        confidence += out.row(0)[1] ;
+        LOG_ERR("son_checkkkkk___model3===22222===222%f===%f", out.row(0)[1], confidence);
 
     }
     confidence /= ( model_num_ ) ;
@@ -126,7 +173,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box) {
     box.confidence = confidence;
     return confidence;
 }
-cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config) {
+cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, float scale_) {
     int x = static_cast<int>(box.x1);
     int y = static_cast<int>(box.y1);
     int box_width = static_cast<int>(box.x2 - box.x1 + 1);
@@ -140,12 +187,17 @@ cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config) {
             config.scale,
             std::min((w - 1) / (float) box_width, (h - 1) / (float) box_height)
     );
-
     int box_center_x = box_width / 2 + x;
     int box_center_y = box_height / 2 + y;
+    if (scale_ < scale){
+        scale_ = scale;
 
-    int new_width = static_cast<int>(box_width * scale);
-    int new_height = static_cast<int>(box_height * scale);
+    }
+
+//    LOG_ERR("son_checkkkkk___model3____out=%f", scale_);
+
+    int new_width = static_cast<int>(box_width * scale_);
+    int new_height = static_cast<int>(box_height * scale_);
 
     int left_top_x = box_center_x - new_width / 2 + shift_x;
     int left_top_y = box_center_y - new_height / 2 + shift_y;

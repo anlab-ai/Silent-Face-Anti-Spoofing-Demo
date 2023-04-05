@@ -20,10 +20,10 @@ public:
 
     int LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &configs);
 
-    float Detect(cv::Mat &src, FaceBox &box);
+    float Detect(cv::Mat &src, FaceBox &box, int orientation);
 
 private:
-    cv::Rect CalculateBox(FaceBox &box, int w, int h, ModelConfig &config);
+    cv::Rect CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, float scale_);
 
 private:
     std::vector<ncnn::Net *> nets_;

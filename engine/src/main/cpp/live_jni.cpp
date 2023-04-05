@@ -126,7 +126,7 @@ LIVE_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv, jint
     faceBox.x2 = right;
     faceBox.y2 = bottom;
 
-    float confidence = get_live(env, instance)->Detect(bgr, faceBox);
+    float confidence = get_live(env, instance)->Detect(bgr, faceBox, orientation);
     env->ReleaseByteArrayElements(yuv, yuv_, 0);
     return confidence;
 }
