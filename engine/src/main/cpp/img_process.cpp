@@ -73,7 +73,6 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
             RotateClockWise90(dst);
             break;
         case 7: // 水平、垂直翻转 --> transpose
-//
 
             cv::flip(dst, dst, -1);
 

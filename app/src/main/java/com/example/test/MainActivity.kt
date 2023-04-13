@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 12
+    private var frame_loading = 10
 
     private var count_check = 0
     var prevCenterPos: PointF? = null
@@ -267,13 +267,18 @@ class MainActivity : AppCompatActivity() {
 
                                     result.threshold = threshold
 
-                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.6F) {
+                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.5F) {
                                         result.confidence = 0.2F
                                     }
-                                    if (result.confidence >= threshold * 0.6F && result.confidence < threshold ) {
-                                        result.confidence = threshold * 0.6F
+                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.8F ) {
+                                        result.confidence = threshold * 0.5F
                                     }
-                                    if (result.confidence > 0.96F) {
+                                    if (result.confidence >= threshold * 1.2F && result.confidence < threshold*1.5F ) {
+                                        result.confidence = threshold * 1.5F
+                                    }
+
+
+                                    if (result.confidence > 0.9F) {
                                         result.confidence = 1.0F
                                     }
 
@@ -423,7 +428,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.515F ///915 default 655 51F
+        const val defaultThreshold = 0.525F ///915 default 655 51F
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1

@@ -11,7 +11,7 @@ static bool AreaComp(FaceBox& l, FaceBox& r) {
 }
 
 FaceDetector::FaceDetector() : threshold_(0.9f), thread_num_(2){
-    min_face_size_ = 128;
+    min_face_size_ = 170;
 
     option_.lightmode = true;
     option_.num_threads = thread_num_;
@@ -22,7 +22,7 @@ FaceDetector::~FaceDetector() {
 }
 
 void FaceDetector::SetMinFaceSize(int size) {
-    min_face_size_ = 128;                   ///min size box face
+    min_face_size_ = 170;                   ///min size box face
 }
 
 int FaceDetector::LoadModel(AAssetManager* assetManager) {
@@ -68,8 +68,8 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         float confidence = values[1];
 
         if(confidence < threshold_) continue;
-        LOG_ERR("checkkkkk___confidence%f", confidence);
-        LOG_ERR("checkkkkk___confidence%f", threshold_);
+//        LOG_ERR("checkkkkk___confidence%f", confidence);
+//        LOG_ERR("checkkkkk___confidence%f", threshold_);
 
 
         FaceBox box;
@@ -79,17 +79,17 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         box.x2 = values[4] * w;
         box.y2 = values[5] * h;
 
-        // square
+//        // square
         float box_width = box.x2 - box.x1 + 1;
         float box_height = box.y2 - box.y1 + 1;
-
+//
         float size = (box_width + box_height) * 0.5f;
-//
-        if(size < min_face_size_) continue;
-//
+//        LOG_ERR("checkkkkk___box_width%f + box_height%f", box_width, box_height);
+        if(box_width < min_face_size_) continue;
+////
 //        float cx = box.x1 + box_width * 0.5f;
 //        float cy = box.y1 + box_height * 0.5f;
-//
+
 //        box.x1 = cx - size * 0.5f;
 //        box.y1 = cy - size * 0.5f;
 //        box.x2 = cx + size * 0.5f - 1;
