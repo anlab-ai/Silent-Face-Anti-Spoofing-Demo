@@ -134,7 +134,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
 
             cv::Rect rect5 = CalculateBox(box, src.cols, src.rows, configs_[i], 0.8F);
 
-            cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height));
+            cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height), 0, 0 , cv::INTER_CUBIC);
 
         }
         ////check color of pixel=
@@ -155,6 +155,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
 
         if (i == 2) {
             // Convert BGR to RGB
+//            cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
             ncnn::Mat rgb_in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR2RGB, roi.cols, roi.rows);
             in = rgb_in;
         }
@@ -173,23 +174,20 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
             confidence += out.row(0)[1];
         }
         if (i == 2){
-            if (confidence > 1.999F){
+            if (confidence > 1.995F){
                 LOG_ERR("son_checkkkkk___model3===22222==check confidence= %F",confidence);
                 confidence += 1.8F;
-
             }
             else{
                 confidence += out.row(0)[1] ;
                 confidence += out.row(0)[1] ;
 
-
             }
-
         }
         LOG_ERR("son_checkkkkk___model3===22222==model num = %d==%f===%f==scale%f", i, out.row(0)[1], out.row(0)[0], confidence);
 
     }
-    confidence /= ( model_num_ +1) ;
+    confidence /= ( model_num_ + 1) ;
     LOG_ERR("son_checkkkkk___model3____out=%f", confidence);
 
     box.confidence = confidence;
