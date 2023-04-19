@@ -10,8 +10,8 @@ static bool AreaComp(FaceBox& l, FaceBox& r) {
     return ((l.x2 - l.x1 + 1) * (l.y2 - l.y1 + 1)) > ((r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1));
 }
 
-FaceDetector::FaceDetector() : threshold_(0.9f), thread_num_(2){
-    min_face_size_ = 190;
+FaceDetector::FaceDetector() : threshold_(0.8f), thread_num_(2){
+    min_face_size_ = 180;
 
     option_.lightmode = true;
     option_.num_threads = thread_num_;
@@ -22,7 +22,7 @@ FaceDetector::~FaceDetector() {
 }
 
 void FaceDetector::SetMinFaceSize(int size) {
-    min_face_size_ = 190;                   ///min size box face
+    min_face_size_ = 180;                   ///min size box face
 }
 
 int FaceDetector::LoadModel(AAssetManager* assetManager) {
@@ -40,7 +40,6 @@ int FaceDetector::LoadModel(AAssetManager* assetManager) {
     }
     return 0;
 }
-
 int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
     int w = src.cols;
     int h = src.rows;
