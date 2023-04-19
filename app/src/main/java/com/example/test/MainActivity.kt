@@ -48,11 +48,12 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 10
-
+    private var frame_loading = 12
     private var count_check = 0
     var prevCenterPos: PointF? = null
     var byteArrayData:ByteArray? = null
+
+    var check_live = false
 
     var confValues = mutableListOf<Float>()
 //    var confValues: MutableList<Double> = mutableListOf()
@@ -235,6 +236,8 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 if (results.size == 1) {
+                                    check_live == false
+
                                     count_check = 0
                                     var result = DetectionResult()
 
@@ -253,12 +256,14 @@ class MainActivity : AppCompatActivity() {
                                         var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
                                         Log.d("ngoc_distance", "distance = $distance")
                                         if (distance > 50) {
+                                            check_live = false
                                             frameCount = 0
                                         }
                                     }
                                     prevCenterPos = currCenterPos
 
-                                    if (frameCount == 0) {
+                                    if (frameCount == 1) {
+                                        check_live = false
                                         // start time
                                         startTime = System.currentTimeMillis()
 
@@ -289,9 +294,21 @@ class MainActivity : AppCompatActivity() {
                                     confValues = confValues.takeLast(frame_loading).toMutableList() //frame_loading: number of frame check
                                     val sumConf = confValues.sum()
 //                                    Log.d("ngoc", "check count frame" + frameCount)
+                                    val allAboveThreshold = confValues.all { it > defaultThreshold }
+                                    Log.d("ngoc", "check count frame $frameCount, allAboveThreshold value $check_live")
+
+                                    if (frameCount > 2* frame_loading){
+                                        if (allAboveThreshold) {
+                                            check_live = true
+                                        }
+                                    }
 
                                     if (frameCount > frame_loading) {
-                                        result.confidence = sumConf / frame_loading
+                                        result.confidence = if (allAboveThreshold) 1F else 0.3F
+                                        if (check_live == true){
+                                            result.confidence = 1F
+                                        }
+//                                        result.confidence = sumConf / frame_loading
                                         val rect = calculateBoxLocationOnScreen(//FRONT
                                             result.left,
                                             result.top,
@@ -302,6 +319,7 @@ class MainActivity : AppCompatActivity() {
                                         binding.result = result.updateLocation(rect)
 
                                     } else {
+                                        check_live = false
                                         result.confidence = 0.toFloat()
 
                                         val rect = calculateBoxLocationOnScreen(//FRONT
