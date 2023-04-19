@@ -285,7 +285,6 @@ class MainActivity : AppCompatActivity() {
                                         result.confidence = threshold * 1.8F
                                     }
 
-
                                     if (result.confidence > 0.9F) {
                                         result.confidence = 1.0F
                                     }
@@ -297,16 +296,16 @@ class MainActivity : AppCompatActivity() {
                                     val allAboveThreshold = confValues.all { it > defaultThreshold }
                                     Log.d("ngoc", "check count frame $frameCount, allAboveThreshold value $check_live")
 
-                                    if (frameCount > 2* frame_loading){
+                                    if (frameCount > 2 * frame_loading){
                                         if (allAboveThreshold) {
                                             check_live = true
                                         }
                                     }
 
                                     if (frameCount > frame_loading) {
-                                        result.confidence = if (allAboveThreshold) 1F else 0.3F
+                                        result.confidence = if (allAboveThreshold) 0.95F else 0.3F
                                         if (check_live == true){
-                                            result.confidence = 1F
+                                            result.confidence = 0.9999F
                                         }
 //                                        result.confidence = sumConf / frame_loading
                                         val rect = calculateBoxLocationOnScreen(//FRONT
