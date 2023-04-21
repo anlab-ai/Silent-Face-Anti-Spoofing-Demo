@@ -118,10 +118,13 @@ class MainActivity : AppCompatActivity() {
             }
             init()
         })
+
         binding.btnSave.setOnClickListener({
             saveImage()
         })
+
         calculateSize()
+
         binding.surface.holder.let {
             it.setFormat(ImageFormat.NV21)
             it.addCallback(object : SurfaceHolder.Callback, Camera.PreviewCallback {
@@ -172,8 +175,8 @@ class MainActivity : AppCompatActivity() {
                     try {
                         camera = Camera.open(cameraId)
                     } catch (e: Exception) {
-//                        cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT
-                        cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
+                        cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT
+//                        cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
                         camera = Camera.open(cameraId)
                     }
 
@@ -184,9 +187,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-
                 override fun onPreviewFrame(data: ByteArray?, camera: Camera?) {
-
 
                     if (enginePrepared && data != null) {
                         byteArrayData = data
@@ -203,6 +204,10 @@ class MainActivity : AppCompatActivity() {
                                 if (cameraId == cameraId_back){
                                     frameOrientation = frameOrientation_back
                                 }
+                                else{
+                                    frameOrientation = frameOrientation_front
+                                }
+
 
                                 // results = list cac box
                                 val results = engineWrapper.detect(
@@ -285,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                                         result.confidence = threshold * 1.8F
                                     }
 
-                                    if (result.confidence > 0.9F) {
+                                    if (result.confidence > 0.95F) {
                                         result.confidence = 1.0F
                                     }
 
@@ -303,7 +308,7 @@ class MainActivity : AppCompatActivity() {
                                     }
 
                                     if (frameCount > frame_loading) {
-                                        result.confidence = if (allAboveThreshold) 0.95F else 0.3F
+                                        result.confidence = if (allAboveThreshold) 0.9F else 0.3F
                                         if (check_live == true){
                                             result.confidence = 0.9999F
                                         }

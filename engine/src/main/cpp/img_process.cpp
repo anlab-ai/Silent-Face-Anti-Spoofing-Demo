@@ -54,7 +54,6 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
 
         case 1: // 不需要处理
             cv::flip(dst, dst, 0);
-
             cv::transpose(dst, dst);
             break;
         case 2: // 水平翻转
