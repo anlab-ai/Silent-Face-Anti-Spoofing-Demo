@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 12
+    private var frame_loading = 15
     private var count_check = 0
     var prevCenterPos: PointF? = null
     var byteArrayData:ByteArray? = null
@@ -224,6 +224,9 @@ class MainActivity : AppCompatActivity() {
                                 if (results.isEmpty()) {
                                     Log.d("ngoc", "output = []")
                                     frameCount = 0
+                                    confValues.clear()
+                                    check_live = false
+
 
                                     val rect = Rect(//FRONT
                                         2000,
@@ -241,7 +244,7 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 if (results.size == 1) {
-                                    check_live == false
+//                                    check_live == false
 
                                     count_check = 0
                                     var result = DetectionResult()
@@ -260,15 +263,17 @@ class MainActivity : AppCompatActivity() {
                                     if (prevCenterPos != null) {
                                         var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
                                         Log.d("ngoc_distance", "distance = $distance")
-                                        if (distance > 50) {
+                                        if (distance > 70) {
                                             check_live = false
                                             frameCount = 0
+                                            confValues.clear()
                                         }
                                     }
                                     prevCenterPos = currCenterPos
 
-                                    if (frameCount == 1) {
+                                    if (frameCount == 0) {
                                         check_live = false
+                                        confValues.clear()
                                         // start time
                                         startTime = System.currentTimeMillis()
 
@@ -280,23 +285,33 @@ class MainActivity : AppCompatActivity() {
                                     if (result.confidence > 0.2F && result.confidence < threshold * 0.5F) {
                                         result.confidence = 0.2F
                                     }
-                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.8F ) {
+                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.7F ) {
                                         result.confidence = threshold * 0.5F
                                     }
                                     if (result.confidence >= threshold * 1.3F && result.confidence < threshold*1.5F ) {
                                         result.confidence = threshold * 1.5F
                                     }
-                                    if (result.confidence >= threshold * 1.5F && result.confidence < threshold*1.8F ) {
-                                        result.confidence = threshold * 1.8F
+                                    if (result.confidence >= threshold * 1.5F && result.confidence < threshold*1.7F ) {
+                                        result.confidence = threshold * 1.7F
                                     }
 
                                     if (result.confidence > 0.95F) {
                                         result.confidence = 1.0F
                                     }
 
+
                                     confValues.add(result.confidence)
+//                                    Log.d("ngoc", "check result confident ${confValues[14]}, allAboveThreshold value ${result.confidence}")
+
                                     confValues = confValues.takeLast(frame_loading).toMutableList() //frame_loading: number of frame check
-                                    val sumConf = confValues.sum()
+                                    val average_Conf = confValues.average()
+                                    if (confValues.size > frame_loading - 1) {
+
+                                        confValues.removeAt(frame_loading - 1)
+                                        confValues.add(average_Conf.toFloat())
+
+
+                                    }
 //                                    Log.d("ngoc", "check count frame" + frameCount)
                                     val allAboveThreshold = confValues.all { it > defaultThreshold }
                                     Log.d("ngoc", "check count frame $frameCount, allAboveThreshold value $check_live")
@@ -305,6 +320,10 @@ class MainActivity : AppCompatActivity() {
                                         if (allAboveThreshold) {
                                             check_live = true
                                         }
+//                                        else{
+//                                            check_live = false
+//                                        }
+
                                     }
 
                                     if (frameCount > frame_loading) {
@@ -339,7 +358,12 @@ class MainActivity : AppCompatActivity() {
 
                                     binding.rectView.postInvalidate()
 
+                                }else{
+                                    check_live = false
+                                    frameCount = 0
+                                    confValues.clear()
                                 }
+
                                 working = false
 
                             }
@@ -453,7 +477,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.555F ///915 default 655 51F
+        const val defaultThreshold = 0.655F ///915 default 655 51F
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1
