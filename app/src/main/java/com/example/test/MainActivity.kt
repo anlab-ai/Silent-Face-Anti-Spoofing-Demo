@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                     parameters?.setPreviewSize(previewWidth, previewHeight)
 
                     if (cameraId == cameraId_back){
-                    parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
+                        parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
                     }
                     //parameters?.flashMode()
 
@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
                                                 check_live = true
 
                                             }
-                                      }
+                                        }
                                         else{
                                             count_check_live = 0
                                             check_live = false
@@ -398,7 +398,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnSave.setOnClickListener({
             cameraViewModel.isSaving.set(true)
-            saveImage()
+            val folder = "folder_${System.currentTimeMillis()}"
+            val file = File(
+                Environment.getExternalStorageDirectory()
+                    .path + "/Download/$folder"
+            )
+            if (!file.exists()){
+                file.mkdir()
+            }
+            saveImage(folder)
         })
         binding.btnDwonload.setOnClickListener {
             cameraViewModel.isSaving.set(false)
@@ -514,7 +522,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
-    fun saveImage(){
+    fun saveImage(folder:String){
         Log.d("save_img", "start")
         if(byteArrayData != null){
             try {
@@ -529,7 +537,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("save_img", "name: "+name)
                 val file = File(
                     Environment.getExternalStorageDirectory()
-                        .path + "/Download/$name"
+                        .path + "/Download/$folder/$name"
                 )
                 val filecon = FileOutputStream(file)
                 image.compressToJpeg(
@@ -545,7 +553,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("mop", "saveImage: $currTimeSave, ${cameraViewModel.isSaving.get()}")
                     Handler().postDelayed({
                         currTimeSave+=timeSaveImgInterval
-                        saveImage()
+                        saveImage(folder)
                     }, timeSaveImgInterval.toLong())
                 }else{
                     currTimeSave = 0
