@@ -13,6 +13,7 @@ import android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
@@ -36,7 +37,11 @@ import java.io.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
+    private var cameraViewModel:CameraViewModel = CameraViewModel()
+    private var isAutoSave = true
+    private var timeSaveImg = 10000
+    private var timeSaveImgInterval = 500
+    private var currTimeSave = 0
     private var enginePrepared: Boolean = false
     private lateinit var engineWrapper: EngineWrapper
     private var threshold: Float = defaultThreshold
@@ -113,19 +118,16 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.result = DetectionResult()
         binding.result2 = DetectionResult()
+        binding.viewModel = cameraViewModel
         binding.btnFlip.setOnClickListener({
             if(cameraId==cameraId_back){
                 cameraId = cameraId_front
             }else{
+                View.VISIBLE
                 cameraId = cameraId_back
             }
             init()
         })
-
-        binding.btnSave.setOnClickListener({
-            saveImage()
-        })
-
         calculateSize()
 
         binding.surface.holder.let {
@@ -393,6 +395,16 @@ class MainActivity : AppCompatActivity() {
             this.start()
         }
 
+
+        binding.btnSave.setOnClickListener({
+            cameraViewModel.isSaving.set(true)
+            saveImage()
+        })
+        binding.btnDwonload.setOnClickListener {
+            cameraViewModel.isSaving.set(false)
+            currTimeSave = 0
+        }
+
     }
 
     private fun calculateSize() {
@@ -524,9 +536,22 @@ class MainActivity : AppCompatActivity() {
                     Rect(0, 0, image.width, image.height), 100,
                     filecon
                 )
-                Toast.makeText(baseContext, "Saved image $name", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(baseContext, "Saved image $name", Toast.LENGTH_SHORT).show()
             } catch (e: FileNotFoundException) {
                 Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
+            }
+            if (isAutoSave){
+                if (cameraViewModel.isSaving.get() == true && currTimeSave<=timeSaveImg){
+                    Log.d("mop", "saveImage: $currTimeSave, ${cameraViewModel.isSaving.get()}")
+                    Handler().postDelayed({
+                        currTimeSave+=timeSaveImgInterval
+                        saveImage()
+                    }, timeSaveImgInterval.toLong())
+                }else{
+                    currTimeSave = 0
+                    cameraViewModel.isSaving.set(false)
+                    Log.d("mop", "stop saveImage: $currTimeSave, ${cameraViewModel.isSaving.get()}")
+                }
             }
         }else{
             Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()

@@ -12,7 +12,9 @@
         <variable
             name="result2"
             type="com.example.test.DetectionResult" />
-
+        <variable
+            name="viewModel"
+            type="com.example.test.CameraViewModel" />
     </data>
 
     <RelativeLayout
@@ -141,15 +143,19 @@
                 android:layout_marginEnd="21dp"
                 android:id="@+id/btn_flip"
                 android:src="@drawable/ic_flip_camera"/>
+
             <ImageView
+                android:id="@+id/btn_save"
+                android:visibility="@{viewModel.isSaving() ? View.GONE : View.VISIBLE}"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_alignParentRight="false"
-                android:layout_marginStart="30dp"
-                android:id="@+id/btn_save"
-                android:src="@drawable/ic_save"/>
-
-
+                android:src="@drawable/ic_save" />
+            <ImageView
+                android:id="@+id/btn_dwonload"
+                android:visibility="@{viewModel.isSaving() ? View.VISIBLE : View.GONE}"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_download" />
         </RelativeLayout>
 
 
