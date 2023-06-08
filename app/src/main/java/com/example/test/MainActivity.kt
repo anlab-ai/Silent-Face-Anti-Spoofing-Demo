@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var cameraViewModel:CameraViewModel = CameraViewModel()
     private var isAutoSave = true
-    private var timeSaveImg = 10000
+    private var timeSaveImg = 20000
     private var timeSaveImgInterval = 500
     private var currTimeSave = 0
     private var enginePrepared: Boolean = false
@@ -151,11 +151,15 @@ class MainActivity : AppCompatActivity() {
 
                     val parameters = camera?.parameters
                     parameters?.setPreviewSize(previewWidth, previewHeight)
+                    parameters?.jpegQuality = 100
+
+                    val jpegQuality = parameters?.getJpegQuality()
+//                    Log.d("jpegQuality", "/jpegQuality: "+ jpegQuality)
+//                    Log.d("jpegQuality", "/jpegQuality: ${jpegQuality ?: "unknown"}")
 
                     if (cameraId == cameraId_back){
                         parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
                     }
-                    //parameters?.flashMode()
 
                     factorX = screenWidth / previewHeight.toFloat()
                     factorY = screenHeight / previewWidth.toFloat()
@@ -213,7 +217,6 @@ class MainActivity : AppCompatActivity() {
                                     frameOrientation = frameOrientation_front
                                 }
 
-
                                 // results = list cac box
                                 val results = engineWrapper.detect(
                                     data,
@@ -250,7 +253,6 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 if (results.size == 1) {
-//                                    check_live == false
 
                                     count_check = 0
                                     var result = DetectionResult()
@@ -269,6 +271,7 @@ class MainActivity : AppCompatActivity() {
                                     if (prevCenterPos != null) {
                                         var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
                                         Log.d("ngoc_distance", "distance = $distance")
+                                        // Tracking one face
                                         if (distance > 70) {
                                             check_live = false
                                             frameCount = 0
@@ -293,8 +296,8 @@ class MainActivity : AppCompatActivity() {
                                     if (result.confidence > 0.2F && result.confidence < threshold * 0.5F) {
                                         result.confidence = 0.2F
                                     }
-                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.7F ) {
-                                        result.confidence = threshold * 0.5F
+                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.8F ) {
+                                        result.confidence = threshold * 0.4F
                                     }
                                     if (result.confidence >= threshold * 1.3F && result.confidence < threshold*1.5F ) {
                                         result.confidence = threshold * 1.5F
@@ -306,7 +309,6 @@ class MainActivity : AppCompatActivity() {
                                     if (result.confidence > 0.95F) {
                                         result.confidence = 1.0F
                                     }
-
 
                                     confValues.add(result.confidence)
 //                                    Log.d("ngoc", "check result confident ${confValues[14]}, allAboveThreshold value ${result.confidence}")
@@ -328,7 +330,6 @@ class MainActivity : AppCompatActivity() {
                                             count_check_live += 1
                                             if (count_check_live >  check_real_alway){
                                                 check_live = true
-
                                             }
                                         }
                                         else{
@@ -367,7 +368,6 @@ class MainActivity : AppCompatActivity() {
                                         binding.result = result.updateLocation(rect)
 
                                     }
-//                                    Log.d("son_checkkkkk___model3=", "check count frame=left${result.left}, left${result.top}, left${result.right}, left${result.right}, left${result.bottom}")
 
                                     binding.rectView.postInvalidate()
 
@@ -394,7 +394,6 @@ class MainActivity : AppCompatActivity() {
             this.interpolator = LinearInterpolator()
             this.start()
         }
-
 
         binding.btnSave.setOnClickListener({
             cameraViewModel.isSaving.set(true)
@@ -497,7 +496,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestCameraPermission()
         }
-
         super.onResume()
     }
 
@@ -509,7 +507,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val tag = "MainActivity"
-        const val defaultThreshold = 0.575F ///915 default 655 51F
+        const val defaultThreshold = 0.53F ///915 default 655 51F    ///Threshold
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
         const val permissionReqCode = 1

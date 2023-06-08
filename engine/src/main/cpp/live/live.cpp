@@ -35,7 +35,6 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
 
     for (int i = 0; i < model_num_; ++i) {
         ncnn::Net *net = new ncnn::Net();
-//        LOG_ERR("checkkkkkloadmodel === %f.", i);
 
         net->opt = option_;
         std::string param = "live/" + configs_[i].name + ".param";
@@ -60,7 +59,6 @@ int Live::LoadModel(AAssetManager *assetManager, std::vector<ModelConfig> &confi
 }
 float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
     float confidence = 0.f;
-//    LOG_ERR("son_checkkkkk___model3_size_input=%d, %d, %d", src.cols, src.rows, orientation);
 
     Mat scr_clone = src.clone();
 
@@ -100,7 +98,6 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
                 int y = rect2.y - rect.y;
 
                 cv::Rect rect3(x, y, rect2.width, rect2.height);
-//                LOG_ERR("son_checkkkkk___model3_face size============rect3333: %d x %d x %d x %d\n",  rect3.x , rect3.y, rect3.width, rect3.height);
                 cv::resize(roi_pading_final(rect3), roi, cv::Size(configs_[i].width, configs_[i].height));
             }
 
@@ -137,26 +134,23 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
             cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height), 0, 0 , cv::INTER_CUBIC);
 
         }
-        ////check color of pixel=
+        //  check color of pixel=
 //        cv::Vec3b rgb = roi.at<cv::Vec3b>(0, 0);
 //        LOG_ERR("son_checkkkkk___model3===22222==check rgb: %d x %d x %d\n",  rgb[0] , rgb[1], rgb[2]);
 //        if (i == 2) {
 //
 //            cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
 //            cv::Vec3b rgb2 = roi.at<cv::Vec3b>(0, 0);
-////            LOG_ERR("son_checkkkkk___model3===22222==check rgb: %d x %d x %d\n",  rgb2[0] , rgb2[1], rgb2[2]);
+//            LOG_ERR("son_checkkkkk___model3===22222==check rgb: %d x %d x %d\n",  rgb2[0] , rgb2[1], rgb2[2]);
 //
 //        }
 
         ncnn::Mat in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR, roi.cols, roi.rows);
-//        cv::Vec3b rgb = in.at<cv::Vec3b>(0, 0);
-
-//        LOG_ERR("son_checkkkkk___model3===22222==check rgb: %d x %d x %d\n",  in.dims, in.w, in.h);
 
         if (i == 2) {
             // Convert BGR to RGB
-//            cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
-            ncnn::Mat rgb_in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_BGR2RGB, roi.cols, roi.rows);
+            cv::cvtColor(roi, roi, cv::COLOR_BGR2RGB);
+            ncnn::Mat rgb_in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols, roi.rows);
             in = rgb_in;
         }
 
@@ -170,35 +164,35 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
         ncnn::Mat out;
 
         extractor.extract(net_output_name_.c_str(), out); //bug
+        // edit ratio output of multi model
         if (i < 2) {
             confidence += out.row(0)[1];
-        }
-        if (i == 2){
-            if (confidence > 1.995F){
-                LOG_ERR("son_checkkkkk___model3===22222==check confidence= %F",confidence);
+//            if (i == 0){
+//                confidence += out.row(0)[1] * 0.5F ;
+//            }
+        }else{
+            if (confidence > 2.998F){
                 confidence += 1.8F;
             }
             else{
-                confidence += out.row(0)[1] ;
-                confidence += out.row(0)[1] ;
-
+                confidence += 2 *  out.row(0)[1] ;
             }
         }
         LOG_ERR("son_checkkkkk___model3===22222==model num = %d==%f===%f==scale%f", i, out.row(0)[1], out.row(0)[0], confidence);
 
     }
     confidence /= ( model_num_ + 1) ;
-    LOG_ERR("son_checkkkkk___model3____out=%f", confidence);
+    LOG_ERR("son_checkkkkk_result_of_all_model____out=%f", confidence);
 
     box.confidence = confidence;
     return confidence;
 }
+
 cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, float scale_) {
     int x = static_cast<int>(box.x1);
     int y = static_cast<int>(box.y1);
     int box_width = static_cast<int>(box.x2 - box.x1 + 1);
     int box_height = static_cast<int>(box.y2 - box.y1 + 1);
-//    LOG_ERR("son_checkkkkk___model3_face size============: %d x %d x %d x %d\n", x, y, box_width , box_height);
 
     int shift_x = static_cast<int>(box_width * config.shift_x);
     int shift_y = static_cast<int>(box_height * config.shift_y);
@@ -214,7 +208,6 @@ cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, flo
 
     }
 
-//    LOG_ERR("son_checkkkkk___model3____out=%f", scale_);
 
     int new_width = static_cast<int>(box_width * scale_);
     int new_height = static_cast<int>(box_height * scale_);

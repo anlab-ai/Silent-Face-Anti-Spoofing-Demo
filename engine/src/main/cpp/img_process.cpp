@@ -49,11 +49,12 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
     dst.create(height, width, CV_8UC3);
 
     cv::cvtColor(yuv, dst, cv::COLOR_YUV2BGR_NV21);
+    GaussianBlur(dst, dst, cv::Size(3, 3), 0);
 
     switch (orientation) {
 
         case 1: // 不需要处理
-//            cv::flip(dst, dst, 0);
+            cv::flip(dst, dst, 0);
             cv::transpose(dst, dst);
             break;
         case 2: // 水平翻转
