@@ -1,7 +1,3 @@
-//
-// Created by yuanhao on 20-6-9.
-//
-
 #ifndef LIVEBODYEXAMPLE_JNI_LONG_FIELD_H
 #define LIVEBODYEXAMPLE_JNI_LONG_FIELD_H
 

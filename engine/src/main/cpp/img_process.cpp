@@ -1,12 +1,13 @@
-//
-// Created by yuanhao on 20-6-10.
-//
-
 #include <android/bitmap.h>
 #include <opencv2/imgproc.hpp>
+#include "definition.h"
 #include "img_process.h"
 #include "android_log.h"
+#include "jni_long_field.h"
 #include <opencv2/opencv.hpp>
+#include <complex.h>
+#include <android/asset_manager_jni.h>
+
 
 int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out) {
     AndroidBitmapInfo info;
@@ -33,7 +34,6 @@ int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out) {
     return 0;
 }
 
-
 /**
  *   1       2      3       4          5           6          7            8
  *
@@ -46,6 +46,7 @@ int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out) {
 
 void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, cv::Mat& dst) {
     cv::Mat yuv(height + height / 2, width, CV_8UC1, data);
+
     dst.create(height, width, CV_8UC3);
 
     cv::cvtColor(yuv, dst, cv::COLOR_YUV2BGR_NV21);
@@ -53,34 +54,30 @@ void Yuv420sp2bgr(unsigned char* data, int width, int height, int orientation, c
 
     switch (orientation) {
 
-        case 1: // 不需要处理
+        case 1:
             cv::flip(dst, dst, 0);
             cv::transpose(dst, dst);
             break;
-        case 2: // 水平翻转
+        case 2:
             cv::flip(dst, dst, 1);
             break;
-        case 3: // 先水平翻转 然后垂直翻转
+        case 3:
             cv::flip(dst, dst, -1);
             break;
-        case 4: // 垂直翻转
+        case 4:
             cv::flip(dst, dst, 0);
             break;
         case 5: // transpose
             cv::transpose(dst, dst);
             break;
-        case 6: // 顺时针旋转90°
+        case 6:
             RotateClockWise90(dst);
             break;
-        case 7: // 水平、垂直翻转 --> transpose
-
+        case 7:
             cv::flip(dst, dst, -1);
-
             cv::transpose(dst, dst);
-
             break;
-
-        case 8: // 逆时针旋转90°
+        case 8:
             RotateAntiClockWise90(dst);
             break;
         default:
@@ -95,6 +92,7 @@ void RotateAntiClockWise90(cv::Mat &image) {
     cv::flip(image, image, 0);
 }
 
+//
 void RotateClockWise90(cv::Mat &image) {
     if (image.empty()) return;
 

@@ -33,15 +33,14 @@ class DetectionResult(): BaseObservable() {
         this.time = time
         this.hasFace = hasFace
         this.conf_ = faceBox.confidence
-
     }
 
     fun updateLocation(rect: Rect): DetectionResult {
+        // Update location next frame
         this.left = rect.left
         this.top = rect.top
         this.right = rect.right
         this.bottom = rect.bottom
-
         return this
     }
 

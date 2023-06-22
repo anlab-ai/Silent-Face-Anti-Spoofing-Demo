@@ -1,7 +1,3 @@
-//
-// Created by yuanhao on 20-6-9.
-//
-
 #ifndef LIVEBODYEXAMPLE_DEFINITION_H
 #define LIVEBODYEXAMPLE_DEFINITION_H
 
@@ -17,6 +13,11 @@
 #define LIVE_METHOD(METHOD_NAME) \
     Java_com_mv_engine_Live_##METHOD_NAME
 
+
+#define BLUR_DETECTOR_METHOD(METHOD_NAME) \
+    Java_com_mv_engine_BlurDetector_##METHOD_NAME
+
+
 struct FaceBox {
     float confidence;
     float x1;
@@ -24,6 +25,7 @@ struct FaceBox {
     float x2;
     float y2;
 };
+
 
 struct ModelConfig {
     float scale;
@@ -34,5 +36,6 @@ struct ModelConfig {
     std::string name;
     bool org_resize;
 };
+
 
 #endif //LIVEBODYEXAMPLE_DEFINITION_H

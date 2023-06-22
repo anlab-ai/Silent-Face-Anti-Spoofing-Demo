@@ -6,7 +6,9 @@
 #define LIVEBODYEXAMPLE_IMG_PROCESS_H
 
 #include <jni.h>
+#include "definition.h"
 #include <opencv2/core/mat.hpp>
+
 
 int ConvertBitmap2Mat(JNIEnv* env, jobject bitmap, cv::Mat& out);
 

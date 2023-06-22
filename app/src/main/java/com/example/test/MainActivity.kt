@@ -53,13 +53,14 @@ class MainActivity : AppCompatActivity() {
     private val previewWidth: Int = 1280
     private val previewHeight: Int = 960
     private var frameCount = 0
-    private var frame_loading = 15
+    private var frame_loading = 10
     private var count_check = 0
     private var count_check_live = 0
-    private var check_real_alway = 15
+    private var check_real_alway = 10
+    private var save_confidence = true
 
     var prevCenterPos: PointF? = null
-    var byteArrayData:ByteArray? = null
+    var byteArrayData: ByteArray? = null
 
     var check_live = false
 
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             requestPermission()
         }
     }
+
     private fun hasPermissions(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (permission in permissions) {
@@ -117,17 +119,16 @@ class MainActivity : AppCompatActivity() {
     private fun init() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.result = DetectionResult()
-        binding.result2 = DetectionResult()
         binding.viewModel = cameraViewModel
-        binding.btnFlip.setOnClickListener({
-            if(cameraId==cameraId_back){
+        binding.btnFlip.setOnClickListener {
+            if (cameraId == cameraId_back) {
                 cameraId = cameraId_front
-            }else{
+            } else {
                 View.VISIBLE
                 cameraId = cameraId_back
             }
             init()
-        })
+        }
         calculateSize()
 
         binding.surface.holder.let {
@@ -139,9 +140,11 @@ class MainActivity : AppCompatActivity() {
                     width: Int,
                     height: Int
                 ) {
-                    if (holder?.surface == null) return
+                    if (holder?.surface == null)
+                        return
 
-                    if (camera == null) return
+                    if (camera == null)
+                        return
 
                     try {
                         camera?.stopPreview()
@@ -153,19 +156,16 @@ class MainActivity : AppCompatActivity() {
                     parameters?.setPreviewSize(previewWidth, previewHeight)
                     parameters?.jpegQuality = 100
 
+
                     val jpegQuality = parameters?.getJpegQuality()
-//                    Log.d("jpegQuality", "/jpegQuality: "+ jpegQuality)
-//                    Log.d("jpegQuality", "/jpegQuality: ${jpegQuality ?: "unknown"}")
 
                     if (cameraId == cameraId_back){
+                        // Scan image not blur when use focus mode continous video
                         parameters?.focusMode = FOCUS_MODE_CONTINUOUS_VIDEO
                     }
 
                     factorX = screenWidth / previewHeight.toFloat()
                     factorY = screenHeight / previewWidth.toFloat()
-//                    Log.d("ngocscreenHeight", "/screenHeight: "+ screenHeight + "/screenWidth: "+screenWidth)
-//                    Log.d("ngocscreenHeight_preview", "/previewHeight: "+previewWidth+"/previewWidth: "+previewHeight)
-
                     camera?.parameters = parameters
 
                     camera?.startPreview()
@@ -180,6 +180,8 @@ class MainActivity : AppCompatActivity() {
                     camera = null
                 }
 
+
+                // Run camera when start app
                 override fun surfaceCreated(holder: SurfaceHolder) {
                     try {
                         camera = Camera.open(cameraId)
@@ -196,15 +198,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+
                 override fun onPreviewFrame(data: ByteArray?, camera: Camera?) {
 
                     if (enginePrepared && data != null) {
                         byteArrayData = data
                         if (!working) {
-//                            // end time
                             if (frameCount == frame_loading) {
                                 val endTime = System.currentTimeMillis()
-                                Log.d("ngoc", "End Time = " + (endTime - startTime))
                             }
 
                             GlobalScope.launch(detectionContext) {
@@ -217,25 +218,143 @@ class MainActivity : AppCompatActivity() {
                                     frameOrientation = frameOrientation_front
                                 }
 
-                                // results = list cac box
-                                val results = engineWrapper.detect(
+                                // Detect blur
+                                val resultBlur = engineWrapper.detectBlur(
                                     data,
                                     previewWidth,
-                                    previewHeight,
-                                    frameOrientation
+                                    previewHeight
                                 )
-                                Log.d("son", "set demo image endrrrrr")
 
-                                Log.d("ngoc_results", "box =${results}")
+                                // Check detect blur or not blur
+                                if (resultBlur){
 
-                                ///check results=[]
-                                if (results.isEmpty()) {
-                                    Log.d("ngoc", "output = []")
+                                    // Detect bounding box and classify live or spoof
+                                    val results = engineWrapper.detect(
+                                        data,
+                                        previewWidth,
+                                        previewHeight,
+                                        frameOrientation
+                                    )
+
+                                    // Check has face in camera ?
+                                    if (results.isEmpty()) {
+                                        frameCount = 0
+                                        count_check_live = 0
+                                        confValues.clear()
+                                        check_live = false
+
+                                        val rect = Rect(//FRONT
+                                            2000,
+                                            2000,
+                                            2000,
+                                            2000
+                                        )
+                                        val result = DetectionResult()
+                                        binding.result = result.updateLocation(rect)
+                                        binding.rectView.postInvalidate()
+
+                                    }
+                                    if (results.size == 1) {
+                                        var result = DetectionResult()
+                                        result = results.first() // Get bounding box with max confidence score
+
+                                        // Check confidence
+                                        save_confidence = true
+                                        if (save_confidence){
+                                            checkSaveImage(result.confidence)
+                                        }
+
+                                        //point center of box
+                                        val centerX = (result.left + result.right) / 2f
+                                        val centerY = (result.top + result.bottom) / 2f
+                                        val currCenterPos = PointF(centerX, centerY)
+
+                                        if (prevCenterPos != null) {
+                                            var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
+                                            // Tracking one face
+                                            if (distance > 70) {
+                                                check_live = false
+                                                frameCount = 0
+                                                count_check_live = 0
+                                                confValues.clear()
+                                            }
+                                        }
+                                        prevCenterPos = currCenterPos
+
+                                        if (frameCount == 0) {
+                                            count_check_live = 0
+                                            check_live = false
+                                            confValues.clear()
+                                            // start time
+                                            startTime = System.currentTimeMillis()
+                                        }
+                                        frameCount ++
+                                        result.threshold = threshold
+                                        confValues.add(result.confidence)
+
+                                        confValues = confValues.takeLast(frame_loading).toMutableList()
+                                        val average_Conf = confValues.average()
+                                        if (confValues.size > frame_loading - 1) {
+
+                                            confValues.removeAt(frame_loading - 1)
+                                            confValues.add(average_Conf.toFloat())
+                                        }
+
+                                        // Check all threshold is bigger than defaultThreshold
+                                        val allAboveThreshold = confValues.all { it > defaultThreshold }
+
+                                        if (frameCount > frame_loading){
+                                            if (allAboveThreshold) {
+                                                count_check_live += 1
+                                                if (count_check_live > check_real_alway){
+                                                    check_live = true
+                                                }
+                                            }
+                                            else{
+                                                count_check_live = 0
+                                                check_live = false
+                                            }
+                                        }
+                                        if (frameCount > frame_loading) {
+
+                                            if (check_live){
+                                                result.confidence = 0.9999F
+                                            }
+                                            val rect = calculateBoxLocationOnScreen(//FRONT
+                                                result.left,
+                                                result.top,
+                                                result.right,
+                                                result.bottom
+                                            )
+
+                                            binding.result = result.updateLocation(rect)
+
+                                        } else {
+                                            count_check_live = 0
+                                            check_live = false
+                                            result.confidence = 0.toFloat()
+
+                                            val rect = calculateBoxLocationOnScreen(//FRONT
+                                                result.left,
+                                                result.top,
+                                                result.right,
+                                                result.bottom
+                                            )
+                                            binding.result = result.updateLocation(rect)
+                                        }
+                                        binding.rectView.postInvalidate()
+                                    }
+                                    else {
+                                        count_check_live = 0
+                                        check_live = false
+                                        frameCount = 0
+                                        confValues.clear()
+                                    }
+                                }else{
                                     frameCount = 0
                                     count_check_live = 0
                                     confValues.clear()
                                     check_live = false
-
 
                                     val rect = Rect(//FRONT
                                         2000,
@@ -245,141 +364,134 @@ class MainActivity : AppCompatActivity() {
                                     )
 
                                     val result = DetectionResult()
-
                                     binding.result = result.updateLocation(rect)
-
                                     binding.rectView.postInvalidate()
-
-                                }
-
-                                if (results.size == 1) {
-
-                                    count_check = 0
-                                    var result = DetectionResult()
-
-                                    result = results.first()
-//                                    results.forEach { result ->
-                                    count_check ++
-                                    Log.d("ngoc_count_check", "check count_check=$count_check, len results=${results.size}")
-
-                                    //point center of box
-
-                                    val centerX = (result.left + result.right) / 2f
-                                    val centerY = (result.top + result.bottom) / 2f
-                                    val currCenterPos = PointF(centerX, centerY)
-
-                                    if (prevCenterPos != null) {
-                                        var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
-                                        Log.d("ngoc_distance", "distance = $distance")
-                                        // Tracking one face
-                                        if (distance > 70) {
-                                            check_live = false
-                                            frameCount = 0
-                                            count_check_live = 0
-                                            confValues.clear()
-                                        }
-                                    }
-                                    prevCenterPos = currCenterPos
-
-                                    if (frameCount == 0) {
-                                        count_check_live = 0
-                                        check_live = false
-                                        confValues.clear()
-                                        // start time
-                                        startTime = System.currentTimeMillis()
-
-                                    }
-                                    frameCount ++
-
-                                    result.threshold = threshold
-
-                                    if (result.confidence > 0.2F && result.confidence < threshold * 0.5F) {
-                                        result.confidence = 0.2F
-                                    }
-                                    if (result.confidence >= threshold * 0.5F && result.confidence < threshold * 0.8F ) {
-                                        result.confidence = threshold * 0.4F
-                                    }
-                                    if (result.confidence >= threshold * 1.3F && result.confidence < threshold*1.5F ) {
-                                        result.confidence = threshold * 1.5F
-                                    }
-                                    if (result.confidence >= threshold * 1.5F && result.confidence < threshold*1.7F ) {
-                                        result.confidence = threshold * 1.7F
-                                    }
-
-                                    if (result.confidence > 0.95F) {
-                                        result.confidence = 1.0F
-                                    }
-
-                                    confValues.add(result.confidence)
-//                                    Log.d("ngoc", "check result confident ${confValues[14]}, allAboveThreshold value ${result.confidence}")
-
-                                    confValues = confValues.takeLast(frame_loading).toMutableList() //frame_loading: number of frame check
-                                    val average_Conf = confValues.average()
-                                    if (confValues.size > frame_loading - 1) {
-
-                                        confValues.removeAt(frame_loading - 1)
-                                        confValues.add(average_Conf.toFloat())
-
-                                    }
-//                                    Log.d("ngoc", "check count frame" + frameCount)
-                                    val allAboveThreshold = confValues.all { it > defaultThreshold }
-                                    Log.d("ngoc", "check count frame $frameCount, allAboveThreshold value $check_live")
-
-                                    if (frameCount > frame_loading){
-                                        if (allAboveThreshold) {
-                                            count_check_live += 1
-                                            if (count_check_live >  check_real_alway){
-                                                check_live = true
-                                            }
-                                        }
-                                        else{
-                                            count_check_live = 0
-                                            check_live = false
-                                        }
-
-                                    }
-
-                                    if (frameCount > frame_loading) {
-                                        result.confidence = if (allAboveThreshold) 0.9F else 0.3F
-                                        if (check_live == true){
-                                            result.confidence = 0.9999F
-                                        }
-//                                        result.confidence = sumConf / frame_loading
-                                        val rect = calculateBoxLocationOnScreen(//FRONT
-                                            result.left,
-                                            result.top,
-                                            result.right,
-                                            result.bottom
-                                        )
-
-                                        binding.result = result.updateLocation(rect)
-
-                                    } else {
-                                        count_check_live = 0
-                                        check_live = false
-                                        result.confidence = 0.toFloat()
-
-                                        val rect = calculateBoxLocationOnScreen(//FRONT
-                                            result.left,
-                                            result.top,
-                                            result.right,
-                                            result.bottom
-                                        )
-                                        binding.result = result.updateLocation(rect)
-
-                                    }
-
-                                    binding.rectView.postInvalidate()
-
-                                }else{
-                                    count_check_live = 0
-                                    check_live = false
-                                    frameCount = 0
-                                    confValues.clear()
                                 }
 
                                 working = false
 
+//                                val results = engineWrapper.detect(
+//                                    data,
+//                                    previewWidth,
+//                                    previewHeight,
+//                                    frameOrientation
+//                                )
+
+//                                // Check has face in camera ?
+//                                if (results.isEmpty()) {
+//                                    frameCount = 0
+//                                    count_check_live = 0
+//                                    confValues.clear()
+//                                    check_live = false
+//
+//                                    val rect = Rect(//FRONT
+//                                        2000,
+//                                        2000,
+//                                        2000,
+//                                        2000
+//                                    )
+//
+//                                    val result = DetectionResult()
+//                                    binding.result = result.updateLocation(rect)
+//                                    binding.rectView.postInvalidate()
+//
+//                                }
+//
+//                                if (results.size == 1) {
+//                                    var result = DetectionResult()
+//                                    result = results.first()
+//
+//                                    //point center of box
+//                                    val centerX = (result.left + result.right) / 2f
+//                                    val centerY = (result.top + result.bottom) / 2f
+//                                    val currCenterPos = PointF(centerX, centerY)
+//
+//                                    if (prevCenterPos != null) {
+//                                        var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
+//                                        // Tracking one face
+//                                        if (distance > 70) {
+//                                            check_live = false
+//                                            frameCount = 0
+//                                            count_check_live = 0
+//                                            confValues.clear()
+//                                        }
+//                                    }
+//                                    prevCenterPos = currCenterPos
+//
+//                                    if (frameCount == 0) {
+//                                        count_check_live = 0
+//                                        check_live = false
+//                                        confValues.clear()
+//                                        // start time
+//                                        startTime = System.currentTimeMillis()
+//
+//                                    }
+//                                    frameCount ++
+//                                    result.threshold = threshold
+//                                    confValues.add(result.confidence)
+//
+//                                    confValues = confValues.takeLast(frame_loading).toMutableList()
+//                                    val average_Conf = confValues.average()
+//                                    if (confValues.size > frame_loading - 1) {
+//
+//                                        confValues.removeAt(frame_loading - 1)
+//                                        confValues.add(average_Conf.toFloat())
+//                                    }
+//
+//                                    // Check all threshold is bigger than defaultThreshold
+//                                    val allAboveThreshold = confValues.all { it > defaultThreshold }
+//
+//                                    if (frameCount > frame_loading){
+//                                        if (allAboveThreshold) {
+//                                            count_check_live += 1
+//                                            if (count_check_live > check_real_alway){
+//                                                check_live = true
+//                                            }
+//                                        }
+//                                        else{
+//                                            count_check_live = 0
+//                                            check_live = false
+//                                        }
+//
+//                                    }
+//
+//                                    if (frameCount > frame_loading) {
+//
+//                                        if (check_live == true){
+//                                            result.confidence = 0.9999F
+//                                        }
+//
+//                                        val rect = calculateBoxLocationOnScreen(//FRONT
+//                                            result.left,
+//                                            result.top,
+//                                            result.right,
+//                                            result.bottom
+//                                        )
+//
+//                                        binding.result = result.updateLocation(rect)
+//
+//                                    } else {
+//                                        count_check_live = 0
+//                                        check_live = false
+//                                        result.confidence = 0.toFloat()
+//
+//                                        val rect = calculateBoxLocationOnScreen(//FRONT
+//                                            result.left,
+//                                            result.top,
+//                                            result.right,
+//                                            result.bottom
+//                                        )
+//                                        binding.result = result.updateLocation(rect)
+//                                    }
+//                                    binding.rectView.postInvalidate()
+//                                }
+//                                else {
+//                                    count_check_live = 0
+//                                    check_live = false
+//                                    frameCount = 0
+//                                    confValues.clear()
+//                                }
+//                                working = false
                             }
                         }
                     }
@@ -395,18 +507,21 @@ class MainActivity : AppCompatActivity() {
             this.start()
         }
 
-        binding.btnSave.setOnClickListener({
+        // Button save image
+        binding.btnSave.setOnClickListener {
             cameraViewModel.isSaving.set(true)
             val folder = "folder_${System.currentTimeMillis()}"
             val file = File(
                 Environment.getExternalStorageDirectory()
                     .path + "/Download/$folder"
             )
-            if (!file.exists()){
+            if (!file.exists()) {
                 file.mkdir()
             }
             saveImage(folder)
-        })
+        }
+
+        // Button download image
         binding.btnDwonload.setOnClickListener {
             cameraViewModel.isSaving.set(false)
             currTimeSave = 0
@@ -415,11 +530,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateSize() {
+        // Return size and resolution of display current in Android
         val dm = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(dm)
         screenWidth = dm.widthPixels
         screenHeight = dm.heightPixels
     }
+
+    private fun checkSaveImage(confidence: Float){
+        if (confidence > 0.4 && confidence < 0.6) {
+            val folder = "test_live_frontcamera"
+            val file = File(
+                Environment.getExternalStorageDirectory()
+                    .path + "/Download/$folder"
+            )
+            if (!file.exists()) {
+                file.mkdir()
+            }
+            saveImage(folder)
+        }
+    }
+
+
+    private fun checkSaveFace(confidence: Float, left: Int, top: Int, right: Int, bottom: Int){
+        val folder = "folder"
+        val file = File(
+                Environment.getExternalStorageDirectory()
+                    .path + "/Download/$folder"
+        )
+        if (!file.exists()) {
+            file.mkdir()
+        }
+        saveFace_image(folder, left, top, right, bottom)
+    }
+
 
     private fun calculateBoxLocationOnScreen(left: Int, top: Int, right: Int, bottom: Int): Rect =
         Rect(
@@ -458,20 +602,12 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == permissionReqCode) {
-//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                init()
-//            } else {
-//                Toast.makeText(this, "PERMISSION_Camera", Toast.LENGTH_LONG).show()
-//            }
-//        }
+
         if ((ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
             (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         ) {
-            Log.d("ngoc", "permission STORAGE grand")
         }else{
             init()
-            Log.d("ngoc", "permission STORAGE deny")
         }
     }
 
@@ -510,8 +646,7 @@ class MainActivity : AppCompatActivity() {
         const val defaultThreshold = 0.53F ///915 default 655 51F    ///Threshold
 
         val permissions: Array<String> = arrayOf(Manifest.permission.CAMERA)
-        const val permissionReqCode = 1
-    }
+        const val permissionReqCode = 1    }
 
     private fun getPermission() {
         if ((ContextCompat.checkSelfPermission(baseContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) || (
@@ -520,6 +655,8 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
+
+    // Save entire image
     fun saveImage(folder:String){
         Log.d("save_img", "start")
         if(byteArrayData != null){
@@ -530,9 +667,9 @@ class MainActivity : AppCompatActivity() {
                     byteArrayData, parameters.previewFormat,
                     previewWidth, previewHeight, null
                 )
-                Log.d("save_img", "start" + size.width)
+                Log.d("save_img", "start" + size.width + image.width + image.height)
                 var name = "out_${System.currentTimeMillis()}.jpg"
-                Log.d("save_img", "name: "+name)
+                Log.d("save_img", "name: $name")
                 val file = File(
                     Environment.getExternalStorageDirectory()
                         .path + "/Download/$folder/$name"
@@ -542,7 +679,6 @@ class MainActivity : AppCompatActivity() {
                     Rect(0, 0, image.width, image.height), 100,
                     filecon
                 )
-//                Toast.makeText(baseContext, "Saved image $name", Toast.LENGTH_SHORT).show()
             } catch (e: FileNotFoundException) {
                 Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
             }
@@ -563,4 +699,53 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun saveFace_image(folder: String, left: Int, top: Int, right: Int, bottom: Int) {
+        // Save face in image with bounding box
+        Log.d("save_img", "start")
+        if(byteArrayData != null){
+            try {
+                val parameters = camera!!.parameters
+                val size: Camera.Size = parameters.previewSize
+                val image = YuvImage(
+                    byteArrayData, parameters.previewFormat,
+                    previewWidth, previewHeight, null
+                )
+
+                Log.d("save_img", "start" + size.width)
+                var name = "out_${System.currentTimeMillis()}.jpg"
+                Log.d("save_img", "name: $name")
+                val file = File(
+                    Environment.getExternalStorageDirectory()
+                        .path + "/Download/$folder/$name"
+                )
+                val filecon = FileOutputStream(file)
+                val width = bottom - top;
+                val height = right - left;
+
+                image.compressToJpeg(
+                    Rect(1280 - bottom, 960 - left, width, height), 100,
+                    filecon
+                )
+            } catch (e: FileNotFoundException) {
+                Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
+            }
+            if (isAutoSave){
+                if (cameraViewModel.isSaving.get() == true && currTimeSave<=timeSaveImg){
+                    Log.d("mop", "saveImage: $currTimeSave, ${cameraViewModel.isSaving.get()}")
+                    Handler().postDelayed({
+                        currTimeSave+=timeSaveImgInterval
+                        saveImage(folder)
+                    }, timeSaveImgInterval.toLong())
+                }else{
+                    currTimeSave = 0
+                    cameraViewModel.isSaving.set(false)
+                    Log.d("mop", "stop saveImage: $currTimeSave, ${cameraViewModel.isSaving.get()}")
+                }
+            }
+        }else{
+            Toast.makeText(baseContext, "Saved image failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

@@ -1,7 +1,3 @@
-//
-// Created by yuanhao on 20-6-12.
-//
-
 #include <android/asset_manager_jni.h>
 #include "jni_long_field.h"
 #include "live/live.h"
@@ -11,8 +7,8 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
-JniLongField live_field("nativeHandler");
 
+JniLongField live_field("nativeHandler");
 Live* get_live(JNIEnv* env, jobject instance) {
     Live* const live = reinterpret_cast<Live*>(live_field.get(env, instance));
     return live;
@@ -110,7 +106,6 @@ LIVE_METHOD(nativeLoadModel)(JNIEnv *env, jobject instance, jobject asset_manage
     return get_live(env, instance)->LoadModel(mgr, model_configs);
 }
 
-
 JNIEXPORT jfloat JNICALL
 LIVE_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv, jint preview_width,
         jint preview_height, jint orientation, jint left, jint top, jint right, jint bottom) {
@@ -118,7 +113,6 @@ LIVE_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv, jint
 
     cv::Mat bgr;
     Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
-
 
     FaceBox faceBox;
     faceBox.x1 = left;

@@ -5,26 +5,29 @@ import android.util.Log
 import com.mv.engine.FaceBox
 import com.mv.engine.FaceDetector
 import com.mv.engine.Live
+import com.mv.engine.BlurDetector
 
 
 class EngineWrapper(private var assetManager: AssetManager) {
+    private var faceDetector: FaceDetector = FaceDetector() // Face Detector
+    private var live: Live = Live() // Face classify (live / spoof)
+    private var blur: BlurDetector = BlurDetector() // Detect blur or not blur
 
-    private var faceDetector: FaceDetector = FaceDetector()
-    private var live: Live = Live()
 
+    // Load model detection and load model classify live / spoof
     fun init(): Boolean {
         var ret = faceDetector.loadModel(assetManager)
         if (ret == 0) {
             ret = live.loadModel(assetManager)
             return ret == 0
         }
-
         return false
     }
 
     fun destroy() {
         faceDetector.destroy()
         live.destroy()
+        blur.destroy()
     }
 
     fun detect(yuv: ByteArray, width: Int, height: Int, orientation: Int): List<DetectionResult> {
@@ -32,11 +35,9 @@ class EngineWrapper(private var assetManager: AssetManager) {
 
         val results = mutableListOf<DetectionResult>()
         var boxes = detectFace(yuv, width, height, orientation)
-        Log.d("soncheck_input", "check width img=${boxes.size}")
 
-        /// get one box face
+        /// get face with confidence score max
         boxes = boxes.take(1)
-
         boxes.forEach {
 
             val box = it.apply {
@@ -53,6 +54,10 @@ class EngineWrapper(private var assetManager: AssetManager) {
         return results
     }
 
+    fun detectBlur(yuv: ByteArray, width: Int, height: Int): Boolean {
+        return blur.detect_blur(yuv, width, height)
+    }
+
     private fun detectFace(
         yuv: ByteArray,
         width: Int,
@@ -67,5 +72,4 @@ class EngineWrapper(private var assetManager: AssetManager) {
         orientation: Int,
         faceBox: FaceBox
     ): Float = live.detect(yuv, width, height, orientation, faceBox)
-
 }

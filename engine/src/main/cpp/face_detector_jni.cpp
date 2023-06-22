@@ -1,7 +1,3 @@
-//
-// Created by yuanhao on 20-6-9.
-//
-
 #include "jni_long_field.h"
 #include "definition.h"
 #include "detection/face_detector.h"
@@ -43,7 +39,6 @@ FACE_DETECTOR_METHOD(nativeDetectBitmap)(JNIEnv *env, jobject instance, jobject 
 JNIEXPORT jobject JNICALL
 FACE_DETECTOR_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv,
                                       jint preview_width, jint preview_height,jint orientation);
-
 }
 
 
@@ -65,6 +60,7 @@ jobject ConvertFaceBoxVector2List(JNIEnv *env, std::vector<FaceBox>& boxes) {
         int top = static_cast<int>(box.y1);
         int right = static_cast<int>(box.x2);
         int bottom = static_cast<int>(box.y2);
+
 
 
         jobject face = env->NewObject(face_clz, face_init_method, left, top, right, bottom, 0.f);
@@ -107,7 +103,7 @@ FACE_DETECTOR_METHOD(nativeDetectBitmap)(JNIEnv *env, jobject instance, jobject 
         return nullptr;
 
     std::vector<FaceBox> boxes;
-    get_face_detector(env, instance)->Detect(img, boxes);
+    get_face_detector(env, instance)->Detect(img, boxes); // Return vector face
 
     AndroidBitmap_unlockPixels(env, bitmap);
 
@@ -120,12 +116,8 @@ JNIEXPORT jobject JNICALL
 FACE_DETECTOR_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray yuv,
         jint preview_width, jint preview_height,jint orientation) {
     jbyte *yuv_ = env->GetByteArrayElements(yuv, nullptr);
-
     cv::Mat bgr;
     Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
-
-    LOG_ERR("checkkkkk_Input dst: %d x %d x %d \n", preview_width, preview_height, orientation);
-
 
     std::vector<FaceBox> boxes;
     get_face_detector(env, instance)->Detect(bgr, boxes);

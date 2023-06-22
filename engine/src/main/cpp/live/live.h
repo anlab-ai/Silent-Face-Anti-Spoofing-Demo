@@ -1,7 +1,3 @@
-//
-// Created by yuanhao on 20-6-12.
-//
-
 #ifndef LIVEBODYEXAMPLE_LIVE_H
 #define LIVEBODYEXAMPLE_LIVE_H
 

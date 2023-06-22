@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">FaceLivenessDetection</string>
-
     <string name="real_face">Real face</string>
     <string name="fake_face">Fake face</string>
     <string name="loading">loading</string>
