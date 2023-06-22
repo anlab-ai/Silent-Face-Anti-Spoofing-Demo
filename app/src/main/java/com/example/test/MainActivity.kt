@@ -31,6 +31,8 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import java.io.*
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 @ObsoleteCoroutinesApi
@@ -45,7 +47,6 @@ class MainActivity : AppCompatActivity() {
     private var enginePrepared: Boolean = false
     private lateinit var engineWrapper: EngineWrapper
     private var threshold: Float = defaultThreshold
-
     private var camera: Camera? = null
     private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_front: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
@@ -58,15 +59,11 @@ class MainActivity : AppCompatActivity() {
     private var count_check_live = 0
     private var check_real_alway = 10
     private var save_confidence = true
-
     var prevCenterPos: PointF? = null
     var byteArrayData: ByteArray? = null
-
     var check_live = false
 
     var confValues = mutableListOf<Float>()
-//    var confValues: MutableList<Double> = mutableListOf()
-//    var isFirst = true
 
     private var startTime = 0L
     /**
@@ -224,6 +221,7 @@ class MainActivity : AppCompatActivity() {
                                     previewWidth,
                                     previewHeight
                                 )
+
                                 binding.engineWrapper = engineWrapper
                                 // Check detect blur or not blur
                                 if (resultBlur){
@@ -259,7 +257,7 @@ class MainActivity : AppCompatActivity() {
                                         result = results.first() // Get bounding box with max confidence score
 
                                         // Check confidence
-                                        save_confidence = true
+                                        save_confidence = false
                                         if (save_confidence){
                                             checkSaveImage(result.confidence)
                                         }
@@ -355,143 +353,17 @@ class MainActivity : AppCompatActivity() {
                                     count_check_live = 0
                                     confValues.clear()
                                     check_live = false
-
                                     val rect = Rect(//FRONT
                                         2000,
                                         2000,
                                         2000,
                                         2000
                                     )
-
                                     val result = DetectionResult()
                                     binding.result = result.updateLocation(rect)
                                     binding.rectView.postInvalidate()
                                 }
-
                                 working = false
-
-//                                val results = engineWrapper.detect(
-//                                    data,
-//                                    previewWidth,
-//                                    previewHeight,
-//                                    frameOrientation
-//                                )
-
-//                                // Check has face in camera ?
-//                                if (results.isEmpty()) {
-//                                    frameCount = 0
-//                                    count_check_live = 0
-//                                    confValues.clear()
-//                                    check_live = false
-//
-//                                    val rect = Rect(//FRONT
-//                                        2000,
-//                                        2000,
-//                                        2000,
-//                                        2000
-//                                    )
-//
-//                                    val result = DetectionResult()
-//                                    binding.result = result.updateLocation(rect)
-//                                    binding.rectView.postInvalidate()
-//
-//                                }
-//
-//                                if (results.size == 1) {
-//                                    var result = DetectionResult()
-//                                    result = results.first()
-//
-//                                    //point center of box
-//                                    val centerX = (result.left + result.right) / 2f
-//                                    val centerY = (result.top + result.bottom) / 2f
-//                                    val currCenterPos = PointF(centerX, centerY)
-//
-//                                    if (prevCenterPos != null) {
-//                                        var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
-//                                        // Tracking one face
-//                                        if (distance > 70) {
-//                                            check_live = false
-//                                            frameCount = 0
-//                                            count_check_live = 0
-//                                            confValues.clear()
-//                                        }
-//                                    }
-//                                    prevCenterPos = currCenterPos
-//
-//                                    if (frameCount == 0) {
-//                                        count_check_live = 0
-//                                        check_live = false
-//                                        confValues.clear()
-//                                        // start time
-//                                        startTime = System.currentTimeMillis()
-//
-//                                    }
-//                                    frameCount ++
-//                                    result.threshold = threshold
-//                                    confValues.add(result.confidence)
-//
-//                                    confValues = confValues.takeLast(frame_loading).toMutableList()
-//                                    val average_Conf = confValues.average()
-//                                    if (confValues.size > frame_loading - 1) {
-//
-//                                        confValues.removeAt(frame_loading - 1)
-//                                        confValues.add(average_Conf.toFloat())
-//                                    }
-//
-//                                    // Check all threshold is bigger than defaultThreshold
-//                                    val allAboveThreshold = confValues.all { it > defaultThreshold }
-//
-//                                    if (frameCount > frame_loading){
-//                                        if (allAboveThreshold) {
-//                                            count_check_live += 1
-//                                            if (count_check_live > check_real_alway){
-//                                                check_live = true
-//                                            }
-//                                        }
-//                                        else{
-//                                            count_check_live = 0
-//                                            check_live = false
-//                                        }
-//
-//                                    }
-//
-//                                    if (frameCount > frame_loading) {
-//
-//                                        if (check_live == true){
-//                                            result.confidence = 0.9999F
-//                                        }
-//
-//                                        val rect = calculateBoxLocationOnScreen(//FRONT
-//                                            result.left,
-//                                            result.top,
-//                                            result.right,
-//                                            result.bottom
-//                                        )
-//
-//                                        binding.result = result.updateLocation(rect)
-//
-//                                    } else {
-//                                        count_check_live = 0
-//                                        check_live = false
-//                                        result.confidence = 0.toFloat()
-//
-//                                        val rect = calculateBoxLocationOnScreen(//FRONT
-//                                            result.left,
-//                                            result.top,
-//                                            result.right,
-//                                            result.bottom
-//                                        )
-//                                        binding.result = result.updateLocation(rect)
-//                                    }
-//                                    binding.rectView.postInvalidate()
-//                                }
-//                                else {
-//                                    count_check_live = 0
-//                                    check_live = false
-//                                    frameCount = 0
-//                                    confValues.clear()
-//                                }
-//                                working = false
                             }
                         }
                     }
@@ -510,7 +382,8 @@ class MainActivity : AppCompatActivity() {
         // Button save image
         binding.btnSave.setOnClickListener {
             cameraViewModel.isSaving.set(true)
-            val folder = "folder_${System.currentTimeMillis()}"
+            val folder = "folder_${convertLongToTime(System.currentTimeMillis())}"
+            Log.d("Long to Date ", "$folder")
             val file = File(
                 Environment.getExternalStorageDirectory()
                     .path + "/Download/$folder"
@@ -537,9 +410,15 @@ class MainActivity : AppCompatActivity() {
         screenHeight = dm.heightPixels
     }
 
+    private fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy.MM.dd_HH-mm-ss")
+        return format.format(date)
+    }
+
     private fun checkSaveImage(confidence: Float){
         if (confidence > 0.4 && confidence < 0.6) {
-            val folder = "test_live_frontcamera"
+            val folder = "folder_${convertLongToTime(System.currentTimeMillis())}"
             val file = File(
                 Environment.getExternalStorageDirectory()
                     .path + "/Download/$folder"
@@ -553,7 +432,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun checkSaveFace(confidence: Float, left: Int, top: Int, right: Int, bottom: Int){
-        val folder = "folder"
+        val folder = "folder_${convertLongToTime(System.currentTimeMillis())}"
+
+        Log.d("Long to time", "$folder")
+
         val file = File(
                 Environment.getExternalStorageDirectory()
                     .path + "/Download/$folder"
@@ -667,7 +549,6 @@ class MainActivity : AppCompatActivity() {
                     byteArrayData, parameters.previewFormat,
                     previewWidth, previewHeight, null
                 )
-                Log.d("save_img", "start" + size.width + image.width + image.height)
                 var name = "out_${System.currentTimeMillis()}.jpg"
                 Log.d("save_img", "name: $name")
                 val file = File(
