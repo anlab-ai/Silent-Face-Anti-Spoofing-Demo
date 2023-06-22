@@ -9,6 +9,7 @@ import com.mv.engine.BlurDetector
 
 
 class EngineWrapper(private var assetManager: AssetManager) {
+    var blurResult:Boolean = false
     private var faceDetector: FaceDetector = FaceDetector() // Face Detector
     private var live: Live = Live() // Face classify (live / spoof)
     private var blur: BlurDetector = BlurDetector() // Detect blur or not blur
@@ -55,7 +56,8 @@ class EngineWrapper(private var assetManager: AssetManager) {
     }
 
     fun detectBlur(yuv: ByteArray, width: Int, height: Int): Boolean {
-        return blur.detect_blur(yuv, width, height)
+        blurResult = blur.detect_blur(yuv, width, height)
+        return blurResult
     }
 
     private fun detectFace(

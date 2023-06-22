@@ -47,7 +47,7 @@ class BlurDetector {
 
     private:
         int re_size = 400;
-        float threshold = 10.0f;
+        float threshold = 5.0f;
 };
 
 #endif //LIVEBODYEXAMPLE_FACE_DETECTOR_H

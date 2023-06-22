@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                                     previewWidth,
                                     previewHeight
                                 )
-
+                                binding.engineWrapper = engineWrapper
                                 // Check detect blur or not blur
                                 if (resultBlur){
 
