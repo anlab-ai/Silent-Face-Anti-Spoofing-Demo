@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     private var enginePrepared: Boolean = false
     private lateinit var engineWrapper: EngineWrapper
     private var threshold: Float = defaultThreshold
-
+    var  a = true
     private var camera: Camera? = null
     private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
     private var cameraId_front: Int = Camera.CameraInfo.CAMERA_FACING_FRONT
