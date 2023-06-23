@@ -140,8 +140,8 @@
 
             </LinearLayout>
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="21dp"
                 android:id="@+id/btn_flip"
@@ -150,19 +150,32 @@
             <ImageView
                 android:id="@+id/btn_save"
                 android:visibility="@{viewModel.isSaving() ? View.GONE : View.VISIBLE}"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/ic_save" />
 
             <ImageView
                 android:id="@+id/btn_dwonload"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/ic_download"
                 android:visibility="@{viewModel.isSaving() ? View.VISIBLE : View.GONE}" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="cameraRollClick"
+                android:layout_marginStart="60dp"
+                android:src="@drawable/ic_camera_roll"/>
         </RelativeLayout>
 
 
+<!--        <ImageView-->
+<!--            android:id="@+id/btn_camera_roll"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:layout_marginLeft="60dp"-->
+<!--            android:src="@drawable/ic_camera_roll" />-->
 
         <ImageButton
             android:layout_width="20dp"
@@ -212,6 +225,9 @@
                 android:text="Blur detector"/>
 
         </RelativeLayout>
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/image"/>
     </RelativeLayout>
 </layout>

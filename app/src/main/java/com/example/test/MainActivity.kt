@@ -6,14 +6,18 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.Camera
 import android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
@@ -21,6 +25,9 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -69,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 //    var isFirst = true
 
     private var startTime = 0L
+    lateinit var bitmap:Bitmap
     /**
      *    1       2       3       4        5          6          7            8
      * <p>
@@ -91,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     private var working: Boolean = false
 
     private lateinit var scaleAnimator: ObjectAnimator
+    private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,6 +122,23 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    fun cameraRollClick(view:View){
+        Log.d("ngoc", "cameraRollClick")
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, 100)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == 100) {
+            imageUri = data?.data
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+//                binding.image.setImageBitmap(bitmap)
+            } catch (e:IOException) {
+                e.printStackTrace();
+            }
+        }
+    }
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestPermission() = requestPermissions(permissions, permissionReqCode)
 
