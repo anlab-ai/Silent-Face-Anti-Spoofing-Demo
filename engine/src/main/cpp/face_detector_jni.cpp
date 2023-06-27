@@ -117,8 +117,8 @@ FACE_DETECTOR_METHOD(nativeDetectYuv)(JNIEnv *env, jobject instance, jbyteArray 
         jint preview_width, jint preview_height,jint orientation) {
     jbyte *yuv_ = env->GetByteArrayElements(yuv, nullptr);
     cv::Mat bgr;
-    Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
 
+    Yuv420sp2bgr(reinterpret_cast<unsigned char *>(yuv_), preview_width, preview_height, orientation, bgr);
     std::vector<FaceBox> boxes;
     get_face_detector(env, instance)->Detect(bgr, boxes);
 

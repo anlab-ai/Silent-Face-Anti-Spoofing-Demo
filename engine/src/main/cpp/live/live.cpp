@@ -140,7 +140,6 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
 
             ncnn::Mat rgb_in = ncnn::Mat::from_pixels(roi.data, ncnn::Mat::PIXEL_RGB, roi.cols, roi.rows);
             in = rgb_in;
-
         }
 
         // inference
@@ -154,7 +153,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
 
         extractor.extract(net_output_name_.c_str(), out); //bug
         confidence += out.row(0)[1];
-        LOG_ERR("model name %d have prob class 0 is %f and class 1 is %f", i, out.row(0)[0], out.row(0)[1]);
+        LOG_ERR("hoang check model name %d have prob class 0 is %f and class 1 is %f", i, out.row(0)[0], out.row(0)[1]);
     }
     confidence /= model_num_ ;
     box.confidence = confidence;
@@ -191,7 +190,6 @@ cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, flo
     int right_bottom_x = box_center_x + new_width / 2 + shift_x;
     int right_bottom_y = box_center_y + new_height / 2 + shift_y;
 
-
     if (left_top_x < 0) {
         right_bottom_x -= left_top_x;
         left_top_x = 0;
@@ -214,5 +212,6 @@ cv::Rect Live::CalculateBox(FaceBox &box, int w, int h, ModelConfig &config, flo
         right_bottom_y -= s;
     }
 
+    LOG_ERR("hoang check bbox %d %d %d %d", left_top_x, left_top_y, right_bottom_x, right_bottom_y);
     return cv::Rect(left_top_x, left_top_y, new_width, new_height);
 }

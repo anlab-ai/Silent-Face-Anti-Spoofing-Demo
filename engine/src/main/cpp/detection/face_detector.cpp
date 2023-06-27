@@ -75,7 +75,11 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
 
     ncnn::Mat in = ncnn::Mat::from_pixels_resize(src.data, ncnn::Mat::PIXEL_BGR, src.cols, src.rows,
                                                  input_width, input_height);
+
     in.substract_mean_normalize(mean_val_, nullptr);
+
+    LOG_ERR("hoang Value after normalize is: %f", in.row(0)[1]);
+
     ncnn::Extractor extractor = net_.create_extractor();
     extractor.set_num_threads(thread_num_);
     extractor.input(net_input_name_.c_str(), in);
@@ -97,13 +101,14 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         box.y1 = values[3] * h;
         box.x2 = values[4] * w;
         box.y2 = values[5] * h;
-        LOG_ERR("Bounding box in image: %f %f %f %f before add size", box.x1, box.y1, box.x2, box.y2);
         float box_width = box.x2 - box.x1 + 1;
         float box_height = box.y2 - box.y1 + 1;
 
         float size = (box_width + box_height) * 0.5f;
         if(box_width < min_face_size_) continue;
 
+        box.y1 = box.y1 - box_width * 0.1;
+        box.y2 = box.y2 - box_width * 0.15;
 //        float cx = box.x1 + box_width * 0.5f;
 //        float cy = box.y1 + box_height * 0.5f;
 //
@@ -111,8 +116,7 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
 //        box.y1 = cy - size * 0.5f;
 //        box.x2 = cx + size * 0.5f - 1;
 //        box.y2 = cy + size * 0.5f - 1;
-
-        LOG_ERR("Bounding box in image: %f %f %f %f", box.x1, box.y1, box.x2, box.y2);
+        LOG_ERR("hoang check Bounding box in image: %f %f %f %f", box.x1, box.y1, box.x2, box.y2);
         boxes.emplace_back(box);
     }
 

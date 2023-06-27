@@ -46,7 +46,7 @@ class BlurDetector {
         int get_size_image(){return this->re_size;}
 
     private:
-        int re_size = 400;
+        int re_size = 300;
         float threshold = 5.0f;
 };
 

@@ -37,6 +37,7 @@ class EngineWrapper(private var assetManager: AssetManager) {
         val results = mutableListOf<DetectionResult>()
         var boxes = detectFace(yuv, width, height, orientation)
 
+
         /// get face with confidence score max
         boxes = boxes.take(1)
         boxes.forEach {
@@ -44,14 +45,11 @@ class EngineWrapper(private var assetManager: AssetManager) {
             val box = it.apply {
                 val c = detectLive(yuv, width, height, orientation, this)
                 confidence = c
-
-
             }
             val end = System.currentTimeMillis()
             val result = DetectionResult(box, end - begin, true)
             results.add(result)
         }
-
         return results
     }
 

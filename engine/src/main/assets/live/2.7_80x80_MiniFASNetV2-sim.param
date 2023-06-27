@@ -2,114 +2,114 @@
 113 125
 Input            data                     0 1 data
 Reshape          Reshape_1                1 1 data 336 0=80 1=80 2=3
-Convolution      Conv_2                   1 1 336 527 0=32 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=864
-PReLU            PRelu_3                  1 1 527 340 0=32
-ConvolutionDepthWise Conv_4                   1 1 340 530 0=32 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=288 7=32
-PReLU            PRelu_5                  1 1 530 344 0=32
-Convolution      Conv_6                   1 1 344 533 0=103 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3296
-PReLU            PRelu_7                  1 1 533 348 0=103
-ConvolutionDepthWise Conv_8                   1 1 348 536 0=103 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=927 7=103
-PReLU            PRelu_9                  1 1 536 352 0=103
-Convolution      Conv_10                  1 1 352 539 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6592
-Split            splitncnn_0              1 2 539 539_splitncnn_0 539_splitncnn_1
-Convolution      Conv_11                  1 1 539_splitncnn_1 542 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-PReLU            PRelu_12                 1 1 542 358 0=13
-ConvolutionDepthWise Conv_13                  1 1 358 545 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
-PReLU            PRelu_14                 1 1 545 362 0=13
-Convolution      Conv_15                  1 1 362 548 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-BinaryOp         Add_16                   2 1 539_splitncnn_0 548 365 0=0
+Convolution      Conv_2                   1 1 336 337 0=32 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=864
+PReLU            PRelu_4                  1 1 337 340 0=32
+ConvolutionDepthWise Conv_5                   1 1 340 341 0=32 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=288 7=32
+PReLU            PRelu_7                  1 1 341 344 0=32
+Convolution      Conv_8                   1 1 344 345 0=103 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3296
+PReLU            PRelu_10                 1 1 345 348 0=103
+ConvolutionDepthWise Conv_11                  1 1 348 349 0=103 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=927 7=103
+PReLU            PRelu_13                 1 1 349 352 0=103
+Convolution      Conv_14                  1 1 352 353 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6592
+Split            splitncnn_0              1 2 353 353_splitncnn_0 353_splitncnn_1
+Convolution      Conv_16                  1 1 353_splitncnn_1 355 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+PReLU            PRelu_18                 1 1 355 358 0=13
+ConvolutionDepthWise Conv_19                  1 1 358 359 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
+PReLU            PRelu_21                 1 1 359 362 0=13
+Convolution      Conv_22                  1 1 362 363 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+BinaryOp         Add_24                   2 1 353_splitncnn_0 363 365 0=0
 Split            splitncnn_1              1 2 365 365_splitncnn_0 365_splitncnn_1
-Convolution      Conv_17                  1 1 365_splitncnn_1 551 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-PReLU            PRelu_18                 1 1 551 369 0=13
-ConvolutionDepthWise Conv_19                  1 1 369 554 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
-PReLU            PRelu_20                 1 1 554 373 0=13
-Convolution      Conv_21                  1 1 373 557 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-BinaryOp         Add_22                   2 1 365_splitncnn_0 557 376 0=0
+Convolution      Conv_25                  1 1 365_splitncnn_1 366 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+PReLU            PRelu_27                 1 1 366 369 0=13
+ConvolutionDepthWise Conv_28                  1 1 369 370 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
+PReLU            PRelu_30                 1 1 370 373 0=13
+Convolution      Conv_31                  1 1 373 374 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+BinaryOp         Add_33                   2 1 365_splitncnn_0 374 376 0=0
 Split            splitncnn_2              1 2 376 376_splitncnn_0 376_splitncnn_1
-Convolution      Conv_23                  1 1 376_splitncnn_1 560 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-PReLU            PRelu_24                 1 1 560 380 0=13
-ConvolutionDepthWise Conv_25                  1 1 380 563 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
-PReLU            PRelu_26                 1 1 563 384 0=13
-Convolution      Conv_27                  1 1 384 566 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-BinaryOp         Add_28                   2 1 376_splitncnn_0 566 387 0=0
+Convolution      Conv_34                  1 1 376_splitncnn_1 377 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+PReLU            PRelu_36                 1 1 377 380 0=13
+ConvolutionDepthWise Conv_37                  1 1 380 381 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
+PReLU            PRelu_39                 1 1 381 384 0=13
+Convolution      Conv_40                  1 1 384 385 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+BinaryOp         Add_42                   2 1 376_splitncnn_0 385 387 0=0
 Split            splitncnn_3              1 2 387 387_splitncnn_0 387_splitncnn_1
-Convolution      Conv_29                  1 1 387_splitncnn_1 569 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-PReLU            PRelu_30                 1 1 569 391 0=13
-ConvolutionDepthWise Conv_31                  1 1 391 572 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
-PReLU            PRelu_32                 1 1 572 395 0=13
-Convolution      Conv_33                  1 1 395 575 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
-BinaryOp         Add_34                   2 1 387_splitncnn_0 575 398 0=0
-Convolution      Conv_35                  1 1 398 578 0=231 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=14784
-PReLU            PRelu_36                 1 1 578 402 0=231
-ConvolutionDepthWise Conv_37                  1 1 402 581 0=231 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=2079 7=231
-PReLU            PRelu_38                 1 1 581 406 0=231
-Convolution      Conv_39                  1 1 406 584 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
-Split            splitncnn_4              1 2 584 584_splitncnn_0 584_splitncnn_1
-Convolution      Conv_40                  1 1 584_splitncnn_1 587 0=231 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
-PReLU            PRelu_41                 1 1 587 412 0=231
-ConvolutionDepthWise Conv_42                  1 1 412 590 0=231 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=2079 7=231
-PReLU            PRelu_43                 1 1 590 416 0=231
-Convolution      Conv_44                  1 1 416 593 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
-BinaryOp         Add_45                   2 1 584_splitncnn_0 593 419 0=0
+Convolution      Conv_43                  1 1 387_splitncnn_1 388 0=13 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+PReLU            PRelu_45                 1 1 388 391 0=13
+ConvolutionDepthWise Conv_46                  1 1 391 392 0=13 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=117 7=13
+PReLU            PRelu_48                 1 1 392 395 0=13
+Convolution      Conv_49                  1 1 395 396 0=64 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=832
+BinaryOp         Add_51                   2 1 387_splitncnn_0 396 398 0=0
+Convolution      Conv_52                  1 1 398 399 0=231 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=14784
+PReLU            PRelu_54                 1 1 399 402 0=231
+ConvolutionDepthWise Conv_55                  1 1 402 403 0=231 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=2079 7=231
+PReLU            PRelu_57                 1 1 403 406 0=231
+Convolution      Conv_58                  1 1 406 407 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
+Split            splitncnn_4              1 2 407 407_splitncnn_0 407_splitncnn_1
+Convolution      Conv_60                  1 1 407_splitncnn_1 409 0=231 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
+PReLU            PRelu_62                 1 1 409 412 0=231
+ConvolutionDepthWise Conv_63                  1 1 412 413 0=231 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=2079 7=231
+PReLU            PRelu_65                 1 1 413 416 0=231
+Convolution      Conv_66                  1 1 416 417 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=29568
+BinaryOp         Add_68                   2 1 407_splitncnn_0 417 419 0=0
 Split            splitncnn_5              1 2 419 419_splitncnn_0 419_splitncnn_1
-Convolution      Conv_46                  1 1 419_splitncnn_1 596 0=52 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6656
-PReLU            PRelu_47                 1 1 596 423 0=52
-ConvolutionDepthWise Conv_48                  1 1 423 599 0=52 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=468 7=52
-PReLU            PRelu_49                 1 1 599 427 0=52
-Convolution      Conv_50                  1 1 427 602 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6656
-BinaryOp         Add_51                   2 1 419_splitncnn_0 602 430 0=0
+Convolution      Conv_69                  1 1 419_splitncnn_1 420 0=52 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6656
+PReLU            PRelu_71                 1 1 420 423 0=52
+ConvolutionDepthWise Conv_72                  1 1 423 424 0=52 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=468 7=52
+PReLU            PRelu_74                 1 1 424 427 0=52
+Convolution      Conv_75                  1 1 427 428 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=6656
+BinaryOp         Add_77                   2 1 419_splitncnn_0 428 430 0=0
 Split            splitncnn_6              1 2 430 430_splitncnn_0 430_splitncnn_1
-Convolution      Conv_52                  1 1 430_splitncnn_1 605 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-PReLU            PRelu_53                 1 1 605 434 0=26
-ConvolutionDepthWise Conv_54                  1 1 434 608 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
-PReLU            PRelu_55                 1 1 608 438 0=26
-Convolution      Conv_56                  1 1 438 611 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-BinaryOp         Add_57                   2 1 430_splitncnn_0 611 441 0=0
+Convolution      Conv_78                  1 1 430_splitncnn_1 431 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+PReLU            PRelu_80                 1 1 431 434 0=26
+ConvolutionDepthWise Conv_81                  1 1 434 435 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
+PReLU            PRelu_83                 1 1 435 438 0=26
+Convolution      Conv_84                  1 1 438 439 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+BinaryOp         Add_86                   2 1 430_splitncnn_0 439 441 0=0
 Split            splitncnn_7              1 2 441 441_splitncnn_0 441_splitncnn_1
-Convolution      Conv_58                  1 1 441_splitncnn_1 614 0=77 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=9856
-PReLU            PRelu_59                 1 1 614 445 0=77
-ConvolutionDepthWise Conv_60                  1 1 445 617 0=77 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=693 7=77
-PReLU            PRelu_61                 1 1 617 449 0=77
-Convolution      Conv_62                  1 1 449 620 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=9856
-BinaryOp         Add_63                   2 1 441_splitncnn_0 620 452 0=0
+Convolution      Conv_87                  1 1 441_splitncnn_1 442 0=77 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=9856
+PReLU            PRelu_89                 1 1 442 445 0=77
+ConvolutionDepthWise Conv_90                  1 1 445 446 0=77 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=693 7=77
+PReLU            PRelu_92                 1 1 446 449 0=77
+Convolution      Conv_93                  1 1 449 450 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=9856
+BinaryOp         Add_95                   2 1 441_splitncnn_0 450 452 0=0
 Split            splitncnn_8              1 2 452 452_splitncnn_0 452_splitncnn_1
-Convolution      Conv_64                  1 1 452_splitncnn_1 623 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-PReLU            PRelu_65                 1 1 623 456 0=26
-ConvolutionDepthWise Conv_66                  1 1 456 626 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
-PReLU            PRelu_67                 1 1 626 460 0=26
-Convolution      Conv_68                  1 1 460 629 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-BinaryOp         Add_69                   2 1 452_splitncnn_0 629 463 0=0
+Convolution      Conv_96                  1 1 452_splitncnn_1 453 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+PReLU            PRelu_98                 1 1 453 456 0=26
+ConvolutionDepthWise Conv_99                  1 1 456 457 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
+PReLU            PRelu_101                1 1 457 460 0=26
+Convolution      Conv_102                 1 1 460 461 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+BinaryOp         Add_104                  2 1 452_splitncnn_0 461 463 0=0
 Split            splitncnn_9              1 2 463 463_splitncnn_0 463_splitncnn_1
-Convolution      Conv_70                  1 1 463_splitncnn_1 632 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-PReLU            PRelu_71                 1 1 632 467 0=26
-ConvolutionDepthWise Conv_72                  1 1 467 635 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
-PReLU            PRelu_73                 1 1 635 471 0=26
-Convolution      Conv_74                  1 1 471 638 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-BinaryOp         Add_75                   2 1 463_splitncnn_0 638 474 0=0
-Convolution      Conv_76                  1 1 474 641 0=308 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=39424
-PReLU            PRelu_77                 1 1 641 478 0=308
-ConvolutionDepthWise Conv_78                  1 1 478 644 0=308 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=2772 7=308
-PReLU            PRelu_79                 1 1 644 482 0=308
-Convolution      Conv_80                  1 1 482 647 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=39424
-Split            splitncnn_10             1 2 647 647_splitncnn_0 647_splitncnn_1
-Convolution      Conv_81                  1 1 647_splitncnn_1 650 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-PReLU            PRelu_82                 1 1 650 488 0=26
-ConvolutionDepthWise Conv_83                  1 1 488 653 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
-PReLU            PRelu_84                 1 1 653 492 0=26
-Convolution      Conv_85                  1 1 492 656 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-BinaryOp         Add_86                   2 1 647_splitncnn_0 656 495 0=0
+Convolution      Conv_105                 1 1 463_splitncnn_1 464 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+PReLU            PRelu_107                1 1 464 467 0=26
+ConvolutionDepthWise Conv_108                 1 1 467 468 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
+PReLU            PRelu_110                1 1 468 471 0=26
+Convolution      Conv_111                 1 1 471 472 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+BinaryOp         Add_113                  2 1 463_splitncnn_0 472 474 0=0
+Convolution      Conv_114                 1 1 474 475 0=308 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=39424
+PReLU            PRelu_116                1 1 475 478 0=308
+ConvolutionDepthWise Conv_117                 1 1 478 479 0=308 1=3 11=3 2=1 12=1 3=2 13=2 4=1 14=1 15=1 16=1 5=1 6=2772 7=308
+PReLU            PRelu_119                1 1 479 482 0=308
+Convolution      Conv_120                 1 1 482 483 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=39424
+Split            splitncnn_10             1 2 483 483_splitncnn_0 483_splitncnn_1
+Convolution      Conv_122                 1 1 483_splitncnn_1 485 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+PReLU            PRelu_124                1 1 485 488 0=26
+ConvolutionDepthWise Conv_125                 1 1 488 489 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
+PReLU            PRelu_127                1 1 489 492 0=26
+Convolution      Conv_128                 1 1 492 493 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+BinaryOp         Add_130                  2 1 483_splitncnn_0 493 495 0=0
 Split            splitncnn_11             1 2 495 495_splitncnn_0 495_splitncnn_1
-Convolution      Conv_87                  1 1 495_splitncnn_1 659 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-PReLU            PRelu_88                 1 1 659 499 0=26
-ConvolutionDepthWise Conv_89                  1 1 499 662 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
-PReLU            PRelu_90                 1 1 662 503 0=26
-Convolution      Conv_91                  1 1 503 665 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
-BinaryOp         Add_92                   2 1 495_splitncnn_0 665 506 0=0
-Convolution      Conv_93                  1 1 506 668 0=512 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=65536
-PReLU            PRelu_94                 1 1 668 510 0=512
-ConvolutionDepthWise Conv_95                  1 1 510 671 0=512 1=5 11=5 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=12800 7=512
-Reshape          Reshape_101              1 1 671 520 0=-1
-InnerProduct     MatMul_102               1 1 520 522 0=128 1=0 2=65536
-BatchNorm        BatchNormalization_103   1 1 522 523 0=128
-InnerProduct     MatMul_104               1 1 523 525 0=3 1=0 2=384
-Softmax          Softmax_105              1 1 525 softmax 0=0 1=1
+Convolution      Conv_131                 1 1 495_splitncnn_1 496 0=26 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+PReLU            PRelu_133                1 1 496 499 0=26
+ConvolutionDepthWise Conv_134                 1 1 499 500 0=26 1=3 11=3 2=1 12=1 3=1 13=1 4=1 14=1 15=1 16=1 5=1 6=234 7=26
+PReLU            PRelu_136                1 1 500 503 0=26
+Convolution      Conv_137                 1 1 503 504 0=128 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=3328
+BinaryOp         Add_139                  2 1 495_splitncnn_0 504 506 0=0
+Convolution      Conv_140                 1 1 506 507 0=512 1=1 11=1 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=65536
+PReLU            PRelu_142                1 1 507 510 0=512
+ConvolutionDepthWise Conv_143                 1 1 510 511 0=512 1=5 11=5 2=1 12=1 3=1 13=1 4=0 14=0 15=0 16=0 5=1 6=12800 7=512
+Reshape          Reshape_150              1 1 511 520 0=-1
+InnerProduct     MatMul_151               1 1 520 522 0=128 1=0 2=65536
+BatchNorm        BatchNormalization_152   1 1 522 523 0=128
+InnerProduct     MatMul_153               1 1 523 525 0=3 1=0 2=384
+Softmax          Softmax_154              1 1 525 softmax 0=0 1=1

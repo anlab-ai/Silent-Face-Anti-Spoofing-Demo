@@ -85,6 +85,11 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:id="@+id/image"/>
         <com.example.test.RectView
             android:id="@+id/rectView"
             android:layout_width="wrap_content"
@@ -225,9 +230,5 @@
                 android:text="Blur detector"/>
 
         </RelativeLayout>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/image"/>
     </RelativeLayout>
 </layout>
