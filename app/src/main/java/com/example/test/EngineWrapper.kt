@@ -38,7 +38,7 @@ class EngineWrapper(private var assetManager: AssetManager) {
         var boxes = detectFace(yuv, width, height, orientation)
 
 
-        /// get face with confidence score max
+        // get face with confidence score max
         boxes = boxes.take(1)
         boxes.forEach {
 

@@ -6,7 +6,6 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -122,6 +121,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        binding.result = DetectionResult()
         if (resultCode == RESULT_OK && requestCode == 100) {
             imageUri = data?.data
             try {
@@ -140,24 +140,19 @@ class MainActivity : AppCompatActivity() {
                     bitmap = Utils.createFlippedBitmap(bitmap, true, false)
                     binding.image.setImageBitmap(bitmap)
 
-
                     if (results.size == 1) {
                         var result = DetectionResult()
                         result = results.first() // Get bounding box with max confidence score
+                        Log.d("hoang", "checl value threshold and confidence: ${result.threshold} and ${result.confidence}")
                         val rect = calculateBoxLocationOnScreen(//FRONT
                             result.left,
                             result.top,
                             result.right,
                             result.bottom
                         )
-                        var bitmap_crop = Utils.cropBitmap(bitmap, result.left, result.top, result.right, result.bottom)
-                        var byteArray_crop = Utils.getNV21(bitmap_crop.width, bitmap_crop.height, bitmap_crop)
-                        // Save bitmap crop
-                        saveImage(byteArray_crop, bitmap_crop.width, bitmap_crop.height)
+                        result.threshold = defaultThreshold
                         binding.result = result.updateLocation(rect)
-                        if (result.confidence > 0.4){
-                            saveImage(byteArray, previewWidth, previewHeight)
-                        }
+                        binding.rectView.postInvalidate()
                     }
                 }
             } catch (e:IOException) {
@@ -205,6 +200,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     val parameters = camera?.parameters
+                    Log.d("hoang check format image in camera", "format: ${parameters?.previewFormat}")
                     parameters?.setPreviewSize(previewWidth, previewHeight)
                     parameters?.jpegQuality = 100
 
@@ -239,7 +235,6 @@ class MainActivity : AppCompatActivity() {
                         camera = Camera.open(cameraId)
                     } catch (e: Exception) {
                         cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT
-//                        cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
                         camera = Camera.open(cameraId)
                     }
 
@@ -269,9 +264,8 @@ class MainActivity : AppCompatActivity() {
                                 else{
                                     frameOrientation = frameOrientation_front
                                 }
-                                // Detect blur
 
-//                                Log.d("Hoang check shape image", "Height is $previewHeight and width $previewWidth")
+                                // Detect blur
                                 if (Common.isCamera){
                                     val resultBlur = engineWrapper.detectBlur(
                                         data,
@@ -311,18 +305,9 @@ class MainActivity : AppCompatActivity() {
                                         if (results.size == 1) {
                                             var result = DetectionResult()
                                             result = results.first() // Get bounding box with max confidence score
-
-                                            // Check confidence
-                                            save_confidence = true
-                                            if (save_confidence){
-                                                checkSaveImage(result.confidence)
-                                            }
-
-                                            //point center of box
                                             val centerX = (result.left + result.right) / 2f
                                             val centerY = (result.top + result.bottom) / 2f
                                             val currCenterPos = PointF(centerX, centerY)
-
                                             if (prevCenterPos != null) {
                                                 var distance = PointF(currCenterPos.x - prevCenterPos!!.x, currCenterPos.y - prevCenterPos!!.y).length()
                                                 // Tracking one face
@@ -370,7 +355,6 @@ class MainActivity : AppCompatActivity() {
                                                 }
                                             }
                                             if (frameCount > frame_loading) {
-
                                                 if (check_live){
                                                     result.confidence = 0.9999F
                                                 }

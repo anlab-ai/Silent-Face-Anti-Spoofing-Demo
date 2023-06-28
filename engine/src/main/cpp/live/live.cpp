@@ -128,7 +128,7 @@ float Live::Detect(cv::Mat &src, FaceBox &box, int orientation) {
 
             cv::Rect rect5 = CalculateBox(box, src.cols, src.rows, configs_[i], 0.8F);
 
-            cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height), 0, 0 , cv::INTER_CUBIC);
+            cv::resize(src(rect5), roi, cv::Size(configs_[i].width, configs_[i].height), 0, 0 , cv::INTER_LINEAR);
 
         }
 

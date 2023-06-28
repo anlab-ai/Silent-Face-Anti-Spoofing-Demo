@@ -18,6 +18,32 @@ public class Utils {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
+
+    public static Bitmap cropBitmap(Bitmap source, int left, int top, int right, int bottom){
+
+        if (right % 2 == 1) {
+            right = right - 1;
+        }
+
+        if (left % 2 == 1) {
+            left = left - 1;
+        }
+
+        if (top % 2 == 1) {
+            top = top - 1;
+        }
+
+        if (bottom % 2 == 1) {
+            bottom = bottom - 1;
+        }
+
+        Log.d("hoang", "Check shape" + left + " " + top + " " + right + " " + bottom);
+        int width = right - left;
+        int height = bottom - top;
+        return Bitmap.createBitmap(source, left, top, width, height);
+    }
+
+
     public static Bitmap createFlippedBitmap(Bitmap source, boolean xFlip, boolean yFlip) {
         Matrix matrix = new Matrix();
         matrix.postScale(xFlip ? -1 : 1, yFlip ? -1 : 1, source.getWidth() / 2f, source.getHeight() / 2f);
@@ -102,9 +128,4 @@ public class Utils {
         }
     }
 
-    public static Bitmap cropBitmap(Bitmap source, int left, int top, int right, int bottom){
-        int width = right - left;
-        int height = bottom - top;
-        return Bitmap.createBitmap(source, left, top, width, height);
-    }
 }

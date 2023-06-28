@@ -10,7 +10,6 @@ BlurDetector::BlurDetector() {}
 // Deconstruction
 BlurDetector::~BlurDetector() {}
 
-
 bool BlurDetector::Detect(cv::Mat &src, int previewWidth, int previewHeight, float threshold) {
     // Detect by fft
 

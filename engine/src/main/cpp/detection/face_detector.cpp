@@ -107,8 +107,8 @@ int FaceDetector::Detect(cv::Mat &src, std::vector<FaceBox> &boxes) {
         float size = (box_width + box_height) * 0.5f;
         if(box_width < min_face_size_) continue;
 
-        box.y1 = box.y1 - box_width * 0.1;
-        box.y2 = box.y2 - box_width * 0.15;
+//        box.y1 = box.y1 - box_width * 0.1;
+//        box.y2 = box.y2 - box_width * 0.2;
 //        float cx = box.x1 + box_width * 0.5f;
 //        float cy = box.y1 + box_height * 0.5f;
 //
